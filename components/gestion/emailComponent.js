@@ -58,7 +58,7 @@ export default function EmailsGestion({ emailsData }) {
                                         {element.email}
                                     </th>
                                     <td className={`px-6 py-4`}>
-                                        {element.receive}
+                                        {element.receive ? 'Oui' : 'Non'}
                                     </td>
                                     <td className={`px-6 py-4`}>
                                         {element.contact_type}
