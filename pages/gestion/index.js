@@ -28,7 +28,7 @@ export default function Gestion({ userData, users, emails }) {
                                 />
                                 <label htmlFor={`value-${idx + 1}`} className="btn">
                                     <span className="relative flex justify-center items-center z-[1000] cursor-pointer">{table.charAt(0).toUpperCase() + table.slice(1)}</span>
-                                    <span aria-hidden="" className="btn__glitch">_{table.toUpperCase()}🦾</span>
+                                    <span aria-hidden={true} className="btn__glitch">_{table.toUpperCase()}🦾</span>
                                     <span className="number">r{idx + 1}</span>
                                 </label>
                             </div>
