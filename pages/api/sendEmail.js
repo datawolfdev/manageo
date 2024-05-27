@@ -1,16 +1,15 @@
 import { pool } from "../../db";
 import axios from "axios";
-import { v4 as uuidv4 } from 'uuid';
-import Brevo from 'sib-api-v3-sdk';
+import Brevo from "sib-api-v3-sdk";
 
 const apiBaseUrlContactFinder = process.env.URL_SERVICE_CONTACTFINDER;
 const apiKeyContactFinder = process.env.API_KEY_CONTACTFINDER;
 const connContactFinder = axios.create({
   baseURL: apiBaseUrlContactFinder,
-  headers: { 'x-api-key': apiKeyContactFinder, 'Content-Type': 'application/json' }
+  headers: { "x-api-key": apiKeyContactFinder, "Content-Type": "application/json" }
 });
 
-Brevo.ApiClient.instance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+Brevo.ApiClient.instance.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
 
 const htmlEmail = (uuid) => {
   return `
@@ -31,7 +30,7 @@ const sendEmails = async (emails) => {
   const apiInstance = new Brevo.TransactionalEmailsApi();
   const emailPromises = emails.map(email => apiInstance.sendTransacEmail({
     to: [{ email: email.email }],
-    subject: 'Confirmation de désinscription',
+    subject: "Confirmation de désinscription",
     htmlContent: htmlEmail(email.uuid),
     sender: { email: process.env.EMAIL_USER }
   }));
@@ -53,13 +52,13 @@ export default async function handler(req, res) {
   try {
     const response = await connContactFinder.get(`/api/job?search_id=${id}`);
     const jsonData = response.data.contacts;
-    const emailEntries = jsonData.map(contact => ({ email: contact.email, uuid: uuidv4(), contact_type: contact.type || 'unknown' }));
+    const emailEntries = jsonData.map(contact => ({ email: contact.email, contact_type: contact.type || "unknown" }));
 
     const client = await pool.connect();
-    await client.query('BEGIN');
-    const insertPromises = emailEntries.map(entry => client.query('INSERT INTO "Emails" (email, uuid, contact_type) VALUES ($1, $2, $3) RETURNING uuid', [entry.email, entry.uuid, entry.contact_type]));
+    await client.query("BEGIN");
+    const insertPromises = emailEntries.map(entry => client.query("INSERT INTO emails (email, uuid, contact_type) VALUES ($1, $2) RETURNING uuid", [entry.email, entry.contact_type]));
     const results = await Promise.all(insertPromises);
-    await client.query('COMMIT');
+    await client.query("COMMIT");
     client.release();
 
     const allEmails = results.map(result => result.rows[0]);

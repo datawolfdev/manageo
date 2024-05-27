@@ -1,4 +1,3 @@
-import { pool } from "../db";
 import axios from "axios";
 
 const apiBaseUrl = process.env.URL_SERVICE_ROCKETLEAD, apiKey = process.env.API_KEY_ROCKETLEAD;

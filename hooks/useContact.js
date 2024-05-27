@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function useContacts(){
     const [contactInputValue, setContactInputValue] = useState("");
@@ -16,12 +16,12 @@ export default function useContacts(){
     };
 
     const handleContactAddOrRemove = (event, contactField, click = false) => {
-        if (event.key === 'Enter' || click) {
+        if (event.key === "Enter" || click) {
             event.preventDefault();
             const newContactField = contactField.trim();
             if (newContactField) {
                 addOrRemoveContact(newContactField)
-                setContactInputValue('')
+                setContactInputValue("")
             }
         }
     }

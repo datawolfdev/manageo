@@ -1,14 +1,14 @@
 import { pool } from "@/db";
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Méthode non autorisée.' });
+    if (req.method !== "POST") {
+        return res.status(405).json({ message: "Méthode non autorisée." });
     }
 
     const { uuid } = req.body;
 
     if (!uuid) {
-        return res.status(400).json({ message: 'UUID est requis.' });
+        return res.status(400).json({ message: "UUID est requis." });
     }
 
     try {
@@ -20,12 +20,12 @@ export default async function handler(req, res) {
         `, [uuid]);
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ message: 'Email non trouvé.' });
+            return res.status(404).json({ message: "Email non trouvé." });
         }
 
-        res.status(200).json({ message: 'Désabonnement réussi.' });
+        res.status(200).json({ message: "Désabonnement réussi." });
     } catch (error) {
-        console.error('Erreur lors du désabonnement:', error);
-        res.status(500).json({ message: 'Erreur interne du serveur.' });
+        console.error("Erreur lors du désabonnement:", error);
+        res.status(500).json({ message: "Erreur interne du serveur." });
     }
 }

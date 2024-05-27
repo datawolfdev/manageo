@@ -79,7 +79,7 @@ export default function SpeedDial() {
                 {tooltip.show && (
                     <div
                         className={`absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm`}
-                        style={{ top: `${tooltip.y}px`, left: `${tooltip.x}px`, transform: 'translateX(-50%)' }}
+                        style={{ top: `${tooltip.y}px`, left: `${tooltip.x}px`, transform: "translateX(-50%)" }}
                     >
                         {tooltip.text}
                     </div>

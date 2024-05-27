@@ -1,7 +1,7 @@
 import { pool } from "@/db";
-import Brevo from 'sib-api-v3-sdk';
+import Brevo from "sib-api-v3-sdk";
 
-Brevo.ApiClient.instance.authentications['api-key'].apiKey = process.env.BREVO_API_KEY;
+Brevo.ApiClient.instance.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
 
 const htmlEmail = (uuid) => {
     return `
@@ -21,11 +21,11 @@ const htmlEmail = (uuid) => {
 export default async function handler(req, res) {
     try {
         const { email, type } = req.body;
-        const { rows } = await pool.query('INSERT INTO emails (email, contact_type) VALUES ($1, $2) RETURNING uuid', [email, type]);
+        const { rows } = await pool.query("INSERT INTO emails (email, contact_type) VALUES ($1, $2) RETURNING uuid", [email, type]);
         const apiInstance = new Brevo.TransactionalEmailsApi();
         apiInstance.sendTransacEmail({
             to: [{ email: email }],
-            subject: 'Confirmation de désinscription',
+            subject: "Confirmation de désinscription",
             htmlContent: htmlEmail(rows[0].uuid),
             sender: { email: process.env.EMAIL_USER }
         });

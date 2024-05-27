@@ -14,16 +14,16 @@ export default function EmailsGestion({ emailsData }) {
                 `"${row.email}"`,
                 `"${row.receive}"`,
                 `"${row.contact_type}"`,
-                `"${row.added_at ? new Date(row.added_at).toLocaleString() : ''}"`,
-                `"${row.deactivated_at ? new Date(row.deactivated_at).toLocaleString() : ''}"`
+                `"${row.added_at ? new Date(row.added_at).toLocaleString() : ""}"`,
+                `"${row.deactivated_at ? new Date(row.deactivated_at).toLocaleString() : ""}"`
             ].join(";");
             csvContent += rowData + "\r\n";
         });
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', 'emails.csv');
+        link.setAttribute("download", "emails.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -60,7 +60,7 @@ export default function EmailsGestion({ emailsData }) {
                                     <td className="px-6 py-4">{element.receive.toString()}</td>
                                     <td className="px-6 py-4">{element.contact_type}</td>
                                     <td className="px-6 py-4">{new Date(element.added_at).toLocaleString()}</td>
-                                    <td className="px-6 py-4">{element.deactivated_at ? new Date(element.deactivated_at).toLocaleString() : ''}</td>
+                                    <td className="px-6 py-4">{element.deactivated_at ? new Date(element.deactivated_at).toLocaleString() : ""}</td>
                                 </tr>
                             ))}
                         </tbody>

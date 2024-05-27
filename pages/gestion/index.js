@@ -1,12 +1,12 @@
-import EmailsGestion from '@/components/gestion/emailComponent';
-import UserGestion from '@/components/gestion/userComponent';
-import SpeedDial from '@/components/speedDialComponent';
-import checkAuth from '@/lib/checkAuth';
-import { useState } from 'react';
-import { pool } from '@/db';
+import EmailsGestion from "@/components/gestion/emailComponent";
+import UserGestion from "@/components/gestion/userComponent";
+import SpeedDial from "@/components/speedDialComponent";
+import checkAuth from "@/lib/checkAuth";
+import { useState } from "react";
+import { pool } from "@/db";
 
 export default function Gestion({ userData, users, emails }) {
-    const [selectedTable, setSelectedTable] = useState('emails');
+    const [selectedTable, setSelectedTable] = useState("emails");
     const isAdmin = userData.admin === true;
 
     return (
@@ -15,7 +15,7 @@ export default function Gestion({ userData, users, emails }) {
             <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16">
                 {isAdmin && (
                     <div className="container flex gap-20 w-full justify-center items-center mb-8">
-                        {['emails', 'users'].map((table, idx) => (
+                        {["emails", "users"].map((table, idx) => (
                             <div key={table} className="radio-wrapper">
                                 <input
                                     type="radio"
@@ -35,8 +35,8 @@ export default function Gestion({ userData, users, emails }) {
                         ))}
                     </div>
                 )}
-                {selectedTable === 'users' && isAdmin && <UserGestion users={users} />}
-                {selectedTable === 'emails' && <EmailsGestion emailsData={emails} />}
+                {selectedTable === "users" && isAdmin && <UserGestion users={users} />}
+                {selectedTable === "emails" && <EmailsGestion emailsData={emails} />}
             </div>
         </section>
     );
@@ -49,8 +49,8 @@ export async function getServerSideProps(context) {
         const client = await pool.connect();
         try {
             const [usersResult, emailsResult] = await Promise.all([
-                client.query('SELECT * FROM users'),
-                client.query('SELECT * FROM emails')
+                client.query("SELECT * FROM users"),
+                client.query("SELECT * FROM emails")
             ]);
 
             const users = usersResult.rows.map(user => ({
@@ -72,7 +72,7 @@ export async function getServerSideProps(context) {
                 }
             };
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error("Error fetching data:", error);
             return { props: { ...authResult.props, users: [], emails: [] } };
         } finally {
             client.release();

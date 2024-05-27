@@ -1,28 +1,28 @@
-import { useState, useRef } from 'react';
-import axios from 'axios';
-import Image from 'next/image';
-import useContacts from '@/hooks/useContact';
-import ContactComponent from '@/components/contactComponent';
-import checkAuth from '@/lib/checkAuth';
-import SpeedDial from '@/components/speedDialComponent';
+import { useState, useRef } from "react";
+import axios from "axios";
+import Image from "next/image";
+import useContacts from "@/hooks/useContact";
+import ContactComponent from "@/components/contactComponent";
+import checkAuth from "@/lib/checkAuth";
+import SpeedDial from "@/components/speedDialComponent";
 
 export default function Home({ userData }) {
     const [file, setFile] = useState(null);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
     const [progress, setProgress] = useState(0);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState("");
     const fileInputRef = useRef(null);
     const Contact = useContacts();
-    const [testEmail, setTestEmail] = useState('')
+    const [testEmail, setTestEmail] = useState("")
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
-        const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv'];
+        const allowedTypes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel", "text/csv"];
         if (selectedFile && allowedTypes.includes(selectedFile.type)) {
             setFile(selectedFile);
-            setError('');
+            setError("");
         } else {
-            setError('Seuls les fichiers .xlsx, .csv sont autorisés.');
+            setError("Seuls les fichiers .xlsx, .csv sont autorisés.");
             setFile(null);
         }
     };
@@ -31,23 +31,23 @@ export default function Home({ userData }) {
         e.preventDefault();
         if (file && Contact.selectedContact.length !== 0) {
             const formData = new FormData();
-            formData.append('file', file);
+            formData.append("file", file);
             setProgress(0);
-            setMessage('Extraction des Siret...');
+            setMessage("Extraction des Siret...");
             try {
-                const { data: { sirets } } = await axios.post('/api/upload', formData);
+                const { data: { sirets } } = await axios.post("/api/upload", formData);
                 if (sirets) {
-                    setMessage('Extraction des SIRET réussie, recherche en cours...');
+                    setMessage("Extraction des SIRET réussie, recherche en cours...");
                     setProgress(33)
-                    const { data: { compagnies } } = await axios.post('/api/rocketLead', { sirets });
-                    setMessage('Recherche terminée, traitement des données...');
+                    const { data: { compagnies } } = await axios.post("/api/rocketLead", { sirets });
+                    setMessage("Recherche terminée, traitement des données...");
                     setProgress(66)
-                    await axios.post('/api/enrich', { compagnies, Contact });
-                    setMessage('Envoie des mails en cours.');
+                    await axios.post("/api/enrich", { compagnies, Contact });
+                    setMessage("Envoie des mails en cours.");
                     setProgress(100);
                 }
             } catch (err) {
-                setError(err.response?.data?.error || 'Erreur lors de l\'envoi du fichier.');
+                setError(err.response?.data?.error || "Erreur lors de l\"envoi du fichier.");
                 setProgress(0);
             }
         }
@@ -55,14 +55,14 @@ export default function Home({ userData }) {
 
     const handleTest = async (e) => {
         e.preventDefault();
-        await axios.post('/api/sendTest', { email: testEmail, type: "rh" });
+        await axios.post("/api/sendTest", { email: testEmail, type: "rh" });
     }
 
     const handleRemoveFile = () => {
         setFile(null);
-        setError('');
+        setError("");
         setProgress(0);
-        setMessage('');
+        setMessage("");
         fileInputRef.current.value = null;
     };
 
@@ -73,7 +73,7 @@ export default function Home({ userData }) {
                 <h1 className="text-white text-2xl">Envoyer votre fichier</h1>
                 <div className="input-div relative w-24 h-24 rounded-full border-2 border-cyan-300 flex justify-center items-center overflow-hidden shadow-[0px_0px_100px_rgb(1,235,252),inset_0px_0px_10px_rgb(1,235,252),0px_0px_5px_rgb(255,255,255)] animate-flicker">
                     <input
-                        className={`input z-10 absolute opacity-0 w-full h-full ${file ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                        className={`input z-10 absolute opacity-0 w-full h-full ${file ? "cursor-not-allowed" : "cursor-pointer"}`}
                         name="file"
                         type="file"
                         accept=".xlsx, .xls, .csv"
@@ -107,8 +107,8 @@ export default function Home({ userData }) {
                 {error && <p className="text-red-500 mt-2">{error}</p>}
                 <button onClick={handleSubmit} className="mt-4 px-4 py-2 bg-cyan-500 text-white rounded">Envoyer</button>
             </div>
-            <input className='text-black' value={testEmail} onChange={(e) => setTestEmail(e.target.value)} type='email'/>
-            <button onClick={handleTest} className='bg-blue' >test</button>
+            <input className="text-black" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} type="email"/>
+            <button onClick={handleTest} className="bg-blue" >test</button>
         </section>
     );
 }
