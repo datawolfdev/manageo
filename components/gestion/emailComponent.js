@@ -14,8 +14,8 @@ export default function EmailsGestion({ emailsData }) {
                 `"${row.email}"`,
                 `"${row.receive}"`,
                 `"${row.contact_type}"`,
-                `"${row.added_at ? new Date(row.added_at).toLocaleString() : ""}"`,
-                `"${row.deactivated_at ? new Date(row.deactivated_at).toLocaleString() : ""}"`
+                `"${row.added_at ? new Date(row.added_at).toLocaleString() : ''}"`,
+                `"${row.deactivated_at ? new Date(row.deactivated_at).toLocaleString() : ''}"`
             ].join(";");
             csvContent += rowData + "\r\n";
         });
