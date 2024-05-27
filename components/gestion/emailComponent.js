@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export default function EmailsGestion({ emailsData }) {
     const handleFileDownload = async (e, content) => {

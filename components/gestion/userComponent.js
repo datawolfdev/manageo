@@ -1,55 +1,55 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function UserGestion({ users }) {
     const [userList, setUserList] = useState(users);
     const [editedUsers, setEditedUsers] = useState({});
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState("");
 
     const handleDeleteUser = async (userId) => {
         console.log(userId);
         try {
             await fetch(`/api/admin/deleteUser`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ userId }),
             });
             setUserList(userList.filter(user => user.id !== userId));
         } catch (error) {
-            console.error('Échec de la suppression de l\'utilisateur:', error);
+            console.error("Échec de la suppression de l'utilisateur:", error);
         }
     };
 
     const handleCommitChanges = async () => {
         try {
             await fetch(`/api/admin/updateUsers`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ updates: editedUsers }),
             });
             setUserList(prevState => prevState.map(user => editedUsers[user.id] ? { ...user, ...editedUsers[user.id] } : user));
             setEditedUsers({});
-            setMessage('Les modifications ont été enregistrées avec succès.');
+            setMessage("Les modifications ont été enregistrées avec succès.");
         } catch (error) {
-            console.error('Échec de l\'enregistrement des modifications:', error);
-            setMessage('Échec de l\'enregistrement des modifications.');
+            console.error("Échec de l'enregistrement des modifications:", error);
+            setMessage("Échec de l'enregistrement des modifications.");
         }
     };
 
     const handleAdminChange = (userId, value) => {
         setEditedUsers(prevState => ({
             ...prevState,
-            [userId]: { ...prevState[userId], admin: value === 'Oui' }
+            [userId]: { ...prevState[userId], admin: value === "Oui" }
         }));
     };
 
     const handleVerifiedChange = (userId, value) => {
         setEditedUsers(prevState => ({
             ...prevState,
-            [userId]: { ...prevState[userId], verified: value === 'Oui' }
+            [userId]: { ...prevState[userId], verified: value === "Oui" }
         }));
     };
 
@@ -78,7 +78,7 @@ export default function UserGestion({ users }) {
                                     <td className="px-6 py-4">{user.email}</td>
                                     <td className="px-6 py-4">
                                         <select
-                                            value={editedUsers[user.id]?.verified ? 'Oui' : (user.verified ? 'Oui' : 'Non')}
+                                            value={editedUsers[user.id]?.verified ? "Oui" : (user.verified ? "Oui" : "Non")}
                                             onChange={(e) => handleVerifiedChange(user.id, e.target.value)}
                                             className="bg-gray-700 border border-gray-600 text-white p-2 rounded"
                                         >
@@ -88,7 +88,7 @@ export default function UserGestion({ users }) {
                                     </td>
                                     <td className="px-6 py-4">
                                         <select
-                                            value={editedUsers[user.id]?.admin ? 'Oui' : (user.admin ? 'Oui' : 'Non')}
+                                            value={editedUsers[user.id]?.admin ? "Oui" : (user.admin ? "Oui" : "Non")}
                                             onChange={(e) => handleAdminChange(user.id, e.target.value)}
                                             className="bg-gray-700 border border-gray-600 text-white p-2 rounded"
                                         >
