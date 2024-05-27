@@ -52,6 +52,7 @@ export default async function handler(req, res) {
   try {
     const response = await connContactFinder.get(`/api/job?search_id=${id}`);
     const jsonData = response.data.contacts;
+    console.log(jsonData)
     const emailEntries = jsonData.map(contact => ({ email: contact.email, contact_type: contact.type || "unknown" }));
 
     const client = await pool.connect();
