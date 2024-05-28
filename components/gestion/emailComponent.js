@@ -54,7 +54,7 @@ export default function EmailsGestion({ emailsData }) {
                 >
                     Télécharger CSV
                 </button>
-                <div className={`relative max-h-96 overflow-y-auto overflow-x-hidden shadow-md sm:rounded-lg`}>
+                <div className={`relative max-h-96 overflow-y-auto overflow-x-auto shadow-md sm:rounded-lg`}>
                     <table className={`w-full text-sm text-left rtl:text-right text-gray-100`}>
                         <thead className={`text-xs text-gray-200 uppercase bg-gray-800`}>
                             <tr>
@@ -66,17 +66,17 @@ export default function EmailsGestion({ emailsData }) {
                                 <th scope="col" className={`px-6 py-3`}>Rôle</th>
                                 <th scope="col" className={`px-6 py-3`}>Date d'ajout</th>
                                 <th scope="col" className={`px-6 py-3`}>Date de désinscription</th>
-                                <th scope="col" className={`px-6 py-3`}>Famille</th>
+                                <th scope="col" className={`px-6 py-3`}>famille</th>
                             </tr>
                         </thead>
                         <tbody>
                             {emailsData && emailsData.map((element) => (
                                 <tr key={element.id} className={`bg-gray-700 border-b hover:overflow-hidden relative group bg-gradient-to-tl from-gray-900 to-gray-950 hover:from-gray-800 hover:to-gray-950 border-r-2 border-t-2 border-gray-900`}>
                                     <td className={`px-6 py-4 font-medium text-white whitespace-nowrap`}>
-                                        {element.company_name}
+                                        {element.siret}
                                     </td>
                                     <td className={`px-6 py-4`}>
-                                        {element.siret}
+                                        {element.company_name}
                                     </td>
                                     <td className={`px-6 py-4`}>
                                         {element.gender}
@@ -91,13 +91,13 @@ export default function EmailsGestion({ emailsData }) {
                                         {element.contact_type}
                                     </td>
                                     <td className={`px-6 py-4`}>
-                                        {new Date(element.added_at).toLocaleString()}
+                                        {element.added_at ? new Date(element.added_at).toLocaleString() : ''}
                                     </td>
                                     <td className={`px-6 py-4`}>
-                                        {new Date(element.deactivated_at).toLocaleString()}
+                                        {element.deactivated_at ? new Date(element.deactivated_at).toLocaleString() : 'Aucune'}
                                     </td>
                                     <td className={`px-6 py-4`}>
-                                        {new Date(element.famille.join(','))}
+                                        {element.famille.join(',')}
                                     </td>
                                 </tr>
                             ))}

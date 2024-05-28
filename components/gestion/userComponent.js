@@ -64,7 +64,7 @@ export default function UserGestion({ users }) {
                         <thead className="text-xs text-gray-200 uppercase bg-gray-800">
                             <tr>
                                 <th className="px-6 py-3">ID</th>
-                                <th className="px-6 py-3">Email</th>
+                                <th className="px-6 py-3">Nom</th>
                                 <th className="px-6 py-3">Vérifié</th>
                                 <th className="px-6 py-3">Admin</th>
                                 <th className="px-6 py-3">Date de création</th>

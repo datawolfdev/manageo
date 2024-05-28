@@ -38,7 +38,7 @@ export default function Home({ userData }) {
                 if (sirets) {
                     setMessage("Extraction des SIRET réussie, recherche en cours...");
                     setProgress(33)
-                    const { data: { compagnies } } = await axios.post("/api/emai/rocketLead", { sirets, Contact });
+                    const { data: { compagnies } } = await axios.post("/api/email/rocketLead", { sirets, Contact });
                     setMessage("Recherche terminée, traitement des données...");
                     setProgress(66)
                     await axios.post("/api/email/enrich", { compagnies, Contact });
