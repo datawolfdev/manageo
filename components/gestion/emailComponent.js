@@ -24,9 +24,20 @@ export default function EmailsGestion({ emailsData }) {
         });
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
+
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleString('fr-FR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        }).replace(/[:/]/g, '-').replace(' ', '_');
+
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "emails.csv");
+        link.setAttribute("download", `emails_${formattedDate}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
