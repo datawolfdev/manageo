@@ -10,32 +10,32 @@ export default function Gestion({ userData, users, emails, templates }) {
     const [selectedTable, setSelectedTable] = useState("emails");
     const isAdmin = userData.admin === true;
 
+    const availableTables = isAdmin ? ["emails", "modeles", "users"] : ["emails", "modeles"];
+
     return (
         <section className="bg-gradient-to-r from-slate-800 to-slate-900 overflow-auto h-full">
             <SpeedDial userData={userData} />
             <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16">
-                {isAdmin && (
-                    <div className="container flex gap-20 w-full justify-center items-center mb-8">
-                        {["emails", "modeles", "users"].map((table, idx) => (
-                            <div key={table} className="radio-wrapper">
-                                <input
-                                    type="radio"
-                                    id={`value-${idx + 1}`}
-                                    name="btn"
-                                    className="input"
-                                    value={table}
-                                    checked={selectedTable === table}
-                                    onChange={(e) => setSelectedTable(e.target.value)}
-                                />
-                                <label htmlFor={`value-${idx + 1}`} className="btn">
-                                    <span className="relative flex justify-center items-center z-[1000] cursor-pointer">{table.charAt(0).toUpperCase() + table.slice(1)}</span>
-                                    <span aria-hidden={true} className="btn__glitch">_{table.toUpperCase()}🦾</span>
-                                    <span className="number">r{idx + 1}</span>
-                                </label>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <div className="container flex gap-20 w-full justify-center items-center mb-8">
+                    {availableTables.map((table, idx) => (
+                        <div key={table} className="radio-wrapper">
+                            <input
+                                type="radio"
+                                id={`value-${idx + 1}`}
+                                name="btn"
+                                className="input"
+                                value={table}
+                                checked={selectedTable === table}
+                                onChange={(e) => setSelectedTable(e.target.value)}
+                            />
+                            <label htmlFor={`value-${idx + 1}`} className="btn">
+                                <span className="relative flex justify-center items-center z-[1000] cursor-pointer">{table.charAt(0).toUpperCase() + table.slice(1)}</span>
+                                <span aria-hidden={true} className="btn__glitch">_{table.toUpperCase()}🦾</span>
+                                <span className="number">r{idx + 1}</span>
+                            </label>
+                        </div>
+                    ))}
+                </div>
                 {selectedTable === "users" && isAdmin && <UserGestion users={users} />}
                 {selectedTable === "emails" && <EmailsGestion emailsData={emails} />}
                 {selectedTable === "modeles" && <EmailTemplateGestion templates={templates} />}

@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function EmailsGestion({ emailsData }) {
-    const handleFileDownload = async (e, content, filterAbonnes = false) => {
+    const handleFileDownload = async (e, content, filterAbonnes = false, filterNonAbonnes = false) => {
         e.preventDefault();
         if (content.length === 0 || (content.length === 1 && !content[0])) {
             return;
@@ -9,6 +9,8 @@ export default function EmailsGestion({ emailsData }) {
 
         if (filterAbonnes) {
             content = content.filter(row => row.receive);
+        } else if (filterNonAbonnes) {
+            content = content.filter(row => !row.receive);
         }
 
         let csvContent = "\uFEFF";
@@ -46,7 +48,7 @@ export default function EmailsGestion({ emailsData }) {
 
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", `emails_${filterAbonnes ? 'abonnes_' : ''}${formattedDate}.csv`);
+        link.setAttribute("download", `emails_${filterAbonnes ? 'abonnes_' : filterNonAbonnes ? 'non_abonnes_' : ''}${formattedDate}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -68,7 +70,13 @@ export default function EmailsGestion({ emailsData }) {
                         className="px-4 py-2 bg-green-500 text-white rounded"
                         onClick={(e) => handleFileDownload(e, emailsData, true)}
                     >
-                        Télécharger Abonnés
+                        Télécharger les Abonnés
+                    </button>
+                    <button
+                        className="px-4 py-2 bg-red-500 text-white rounded"
+                        onClick={(e) => handleFileDownload(e, emailsData, false, true)}
+                    >
+                        Télécharger les Désabonnés
                     </button>
                 </div>
                 <div className={`relative max-h-96 overflow-y-auto overflow-x-auto shadow-md sm:rounded-lg`}>
@@ -134,7 +142,7 @@ export default function EmailsGestion({ emailsData }) {
                     </table>
                 </div>
                 <div className={`h-2 w-full bg-gradient-to-l via-cyan-500 group-hover:blur-xl blur-2xl m-auto rounded transition-all absolute bottom-0`}></div>
-                <div className={`h-0.5 group-hover:w-full bg-gradient-to-l via-cyan-950 group-hover:via-cyan-500 w-[70%] m-auto rounded transition-all`}></div>
+                <div className={`h-0.5 group-hover:w-full bg-gradient-to-l  via-cyan-950 group-hover:via-cyan-500 w-[70%] m-auto rounded transition-all`}></div>
             </div>
         </div>
     );
