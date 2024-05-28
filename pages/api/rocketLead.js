@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { sirets } = req.body;
+        const { sirets, Contact } = req.body;
         if (!Array.isArray(sirets) || sirets.length === 0) return res.status(400).json({ error: "Invalid or empty SIRET list." });
         const processBatches = async (sirets, batchSize = 10) => {
             let results = [];
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
                 const batchResults = await Promise.all(batch.map(async siret => {
                     const { companies } = await companySearch(siret);
                     const company_name = companies[0]?.name1;
-                    if (company_name) await pool.query("INSERT INTO emails (siret, company_name) VALUES ($1, $2) ON CONFLICT (siret) DO NOTHING", [siret, company_name]);
+                    if (company_name) await pool.query("INSERT INTO emails (siret, company_name, famille) VALUES ($1, $2, $3) ON CONFLICT (siret) DO NOTHING", [siret, company_name, Contact.selectedContact]);
                     return company_name;
                 }));
                 results = results.concat(batchResults);

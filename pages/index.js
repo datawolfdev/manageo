@@ -13,7 +13,6 @@ export default function Home({ userData }) {
     const [message, setMessage] = useState("");
     const fileInputRef = useRef(null);
     const Contact = useContacts();
-    const [testEmail, setTestEmail] = useState("")
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -39,7 +38,7 @@ export default function Home({ userData }) {
                 if (sirets) {
                     setMessage("Extraction des SIRET réussie, recherche en cours...");
                     setProgress(33)
-                    const { data: { compagnies } } = await axios.post("/api/rocketLead", { sirets });
+                    const { data: { compagnies } } = await axios.post("/api/rocketLead", { sirets, Contact });
                     setMessage("Recherche terminée, traitement des données...");
                     setProgress(66)
                     await axios.post("/api/enrich", { compagnies, Contact });
@@ -52,11 +51,6 @@ export default function Home({ userData }) {
             }
         }
     };
-
-    const handleTest = async (e) => {
-        e.preventDefault();
-        await axios.post("/api/sendTest", { email: testEmail, type: "rh" });
-    }
 
     const handleRemoveFile = () => {
         setFile(null);
@@ -107,8 +101,6 @@ export default function Home({ userData }) {
                 {error && <p className="text-red-500 mt-2">{error}</p>}
                 <button onClick={handleSubmit} className="mt-4 px-4 py-2 bg-cyan-500 text-white rounded">Envoyer</button>
             </div>
-            <input className="text-black" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} type="email"/>
-            <button onClick={handleTest} className="bg-blue" >test</button>
         </section>
     );
 }
