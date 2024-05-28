@@ -7,10 +7,13 @@ export default function EmailsGestion({ emailsData }) {
             return;
         }
         let csvContent = "\uFEFF";
-        const headers = ["Email", "Abonne", "Role", "Date d'ajouts", "Date de désinscription"].join(";");
+        const headers = ["Nom de la société", "SIRET", "Genre", "Email", "Abonne", "Role", "Date d'ajouts", "Date de désinscription"].join(";");
         csvContent += headers + "\r\n";
         content.forEach(row => {
             const rowData = [
+                `"${row.company_name}"`,
+                `"${row.siret}"`,
+                `"${row.gender}"`,
                 `"${row.email}"`,
                 `"${row.receive}"`,
                 `"${row.contact_type}"`,
@@ -44,6 +47,9 @@ export default function EmailsGestion({ emailsData }) {
                     <table className={`w-full text-sm text-left rtl:text-right text-gray-100`}>
                         <thead className={`text-xs text-gray-200 uppercase bg-gray-800`}>
                             <tr>
+                                <th scope="col" className={`px-6 py-3`}>SIRET</th>
+                                <th scope="col" className={`px-6 py-3`}>Nom de la société</th>
+                                <th scope="col" className={`px-6 py-3`}>Genre</th>
                                 <th scope="col" className={`px-6 py-3`}>Email</th>
                                 <th scope="col" className={`px-6 py-3`}>Abonné</th>
                                 <th scope="col" className={`px-6 py-3`}>Rôle</th>
@@ -54,9 +60,18 @@ export default function EmailsGestion({ emailsData }) {
                         <tbody>
                             {emailsData && emailsData.map((element) => (
                                 <tr key={element.id} className={`bg-gray-700 border-b hover:overflow-hidden relative group bg-gradient-to-tl from-gray-900 to-gray-950 hover:from-gray-800 hover:to-gray-950 border-r-2 border-t-2 border-gray-900`}>
-                                    <th scope="row" className={`px-6 py-4 font-medium text-white whitespace-nowrap`}>
+                                    <td className={`px-6 py-4 font-medium text-white whitespace-nowrap`}>
+                                        {element.company_name}
+                                    </td>
+                                    <td className={`px-6 py-4`}>
+                                        {element.siret}
+                                    </td>
+                                    <td className={`px-6 py-4`}>
+                                        {element.gender}
+                                    </td>
+                                    <td className={`px-6 py-4`}>
                                         {element.email}
-                                    </th>
+                                    </td>
                                     <td className={`px-6 py-4`}>
                                         {element.receive ? 'Oui' : 'Non'}
                                     </td>
