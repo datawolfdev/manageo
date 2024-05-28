@@ -4,8 +4,9 @@ import SpeedDial from "@/components/speedDialComponent";
 import checkAuth from "@/lib/checkAuth";
 import { useState } from "react";
 import { pool } from "@/db";
+import EmailTemplateGestion from "@/components/gestion/emailTemplateComponent";
 
-export default function Gestion({ userData, users, emails }) {
+export default function Gestion({ userData, users, emails, templates }) {
     const [selectedTable, setSelectedTable] = useState("emails");
     const isAdmin = userData.admin === true;
 
@@ -15,7 +16,7 @@ export default function Gestion({ userData, users, emails }) {
             <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16">
                 {isAdmin && (
                     <div className="container flex gap-20 w-full justify-center items-center mb-8">
-                        {["emails", "users"].map((table, idx) => (
+                        {["emails", "modeles", "users"].map((table, idx) => (
                             <div key={table} className="radio-wrapper">
                                 <input
                                     type="radio"
@@ -37,6 +38,7 @@ export default function Gestion({ userData, users, emails }) {
                 )}
                 {selectedTable === "users" && isAdmin && <UserGestion users={users} />}
                 {selectedTable === "emails" && <EmailsGestion emailsData={emails} />}
+                {selectedTable === "modeles" && <EmailTemplateGestion templates={templates} />}
             </div>
         </section>
     );
@@ -45,12 +47,13 @@ export default function Gestion({ userData, users, emails }) {
 export async function getServerSideProps(context) {
     const authResult = await checkAuth(context);
 
-    if (authResult.props.userData) {
+    if (authResult?.props?.userData) {
         const client = await pool.connect();
         try {
-            const [usersResult, emailsResult] = await Promise.all([
+            const [usersResult, emailsResult, emailsTemplate] = await Promise.all([
                 client.query("SELECT * FROM users"),
-                client.query("SELECT * FROM emails")
+                client.query("SELECT * FROM emails"),
+                client.query("SELECT * FROM emails_templates")
             ]);
 
             const users = usersResult.rows.map(user => ({
@@ -64,11 +67,17 @@ export async function getServerSideProps(context) {
                 deactivated_at: email.deactivated_at ? email.deactivated_at.toISOString() : null
             }));
 
+            const templates = emailsTemplate.rows.map(template => ({
+                ...template,
+                created_at: template.created_at ? template.created_at.toISOString() : null,
+            }));
+
             return {
                 props: {
                     ...authResult.props,
                     users,
                     emails,
+                    templates,
                 }
             };
         } catch (error) {

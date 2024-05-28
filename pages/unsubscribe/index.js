@@ -13,7 +13,7 @@ export default function Unsubscribe() {
         }
 
         try {
-            const response = await fetch('/api/unsubscribe', {
+            const response = await fetch('/api/other/unsubscribe', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -55,6 +55,7 @@ export default function EmailsGestion({ emailsData }) {
                                 <th scope="col" className={`px-6 py-3`}>Rôle</th>
                                 <th scope="col" className={`px-6 py-3`}>Date d'ajout</th>
                                 <th scope="col" className={`px-6 py-3`}>Date de désinscription</th>
+                                <th scope="col" className={`px-6 py-3`}>Famille</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,6 +84,9 @@ export default function EmailsGestion({ emailsData }) {
                                     </td>
                                     <td className={`px-6 py-4`}>
                                         {new Date(element.deactivated_at).toLocaleString()}
+                                    </td>
+                                    <td className={`px-6 py-4`}>
+                                        {new Date(element.famille.join(','))}
                                     </td>
                                 </tr>
                             ))}

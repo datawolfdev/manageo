@@ -39,6 +39,11 @@ export default function SpeedDial() {
             icone: "/icones/gestion.png"
         },
         {
+            name: "Modèle",
+            link: "/modele",
+            icone: "/icones/modele.png"
+        },
+        {
             name: "Déconnexion",
             link: "/auth/login",
             icone: "/icones/logout.png"
@@ -81,7 +86,7 @@ export default function SpeedDial() {
                         className={`absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm`}
                         style={{ top: `${tooltip.y}px`, left: `${tooltip.x}px`, transform: "translateX(-50%)" }}
                     >
-                        {tooltip.text}
+                        <p className="flex justify-center items-center">{tooltip.text}</p>
                     </div>
                 )}
             </div>

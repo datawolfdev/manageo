@@ -34,14 +34,14 @@ export default function Home({ userData }) {
             setProgress(0);
             setMessage("Extraction des Siret...");
             try {
-                const { data: { sirets } } = await axios.post("/api/upload", formData);
+                const { data: { sirets } } = await axios.post("/api/email/upload", formData);
                 if (sirets) {
                     setMessage("Extraction des SIRET réussie, recherche en cours...");
                     setProgress(33)
-                    const { data: { compagnies } } = await axios.post("/api/rocketLead", { sirets, Contact });
+                    const { data: { compagnies } } = await axios.post("/api/emai/rocketLead", { sirets, Contact });
                     setMessage("Recherche terminée, traitement des données...");
                     setProgress(66)
-                    await axios.post("/api/enrich", { compagnies, Contact });
+                    await axios.post("/api/email/enrich", { compagnies, Contact });
                     setMessage("Envoie des mails en cours.");
                     setProgress(100);
                 }
