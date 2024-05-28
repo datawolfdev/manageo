@@ -53,7 +53,7 @@ export default async function handler(req, res) {
         const response = await connContactFinder.get(`/api/job?search_id=${id}`);
         const jsonData = response.data.contacts;
         console.log("JSON Entries: ", jsonData)
-        const emailEntries = jsonData.map(contact => ({ email: contact.email, contact_type: contact.type || "unknown" }));
+        const emailEntries = jsonData.map(contact => ({ email: contact.email, contact_type: contact.role || "unknown" }));
         console.log("Email Entries: ", emailEntries)
         const client = await pool.connect();
         await client.query("BEGIN");
@@ -63,6 +63,7 @@ export default async function handler(req, res) {
         client.release();
 
         const allEmails = results.map(result => result.rows[0]);
+        console.log(allEmails)
         await batchSendEmails(allEmails);
 
         res.status(200).json({ message: "Le fichier a été mis à jour avec succès, les crédits utilisés et le search_id ont été vidés." });
