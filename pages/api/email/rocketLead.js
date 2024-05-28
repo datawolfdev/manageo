@@ -10,6 +10,7 @@ export default async function handler(req, res) {
     try {
         const { sirets, Contact } = req.body;
         if (!Array.isArray(sirets) || sirets.length === 0) return res.status(400).json({ error: "Invalid or empty SIRET list." });
+
         const processBatches = async (sirets, batchSize = 10) => {
             let results = [];
             for (let i = 0; i < sirets.length; i += batchSize) {
@@ -26,6 +27,10 @@ export default async function handler(req, res) {
         };
 
         const compagnies = await processBatches(sirets);
+        const companyCount = compagnies.filter(name => name).length;
+
+        await pool.query("UPDATE operations SET company_count = $1 WHERE created_at = (SELECT MAX(created_at) FROM operations)", [companyCount]);
+
         res.status(200).json({ message: "Company data retrieved and saved successfully", compagnies });
     } catch (error) {
         console.error("Failed to search and save company data:", error);

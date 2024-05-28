@@ -1,4 +1,3 @@
-
 import { pool } from "@/db";
 import axios from "axios";
 import Brevo from "sib-api-v3-sdk";
@@ -74,6 +73,10 @@ export default async function handler(req, res) {
         client.release();
 
         await batchSendEmails(results, templateContent, subject);
+
+        const emailCount = emailEntries.length;
+
+        await pool.query("UPDATE operations SET email_count = $1 WHERE created_at = (SELECT MAX(created_at) FROM operations)", [emailCount]);
 
         res.status(200).json({ message: "Le fichier a été mis à jour avec succès, les crédits utilisés et le search_id ont été vidés." });
     } catch (error) {

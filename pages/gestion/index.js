@@ -5,12 +5,13 @@ import checkAuth from "@/lib/checkAuth";
 import { useState } from "react";
 import { pool } from "@/db";
 import EmailTemplateGestion from "@/components/gestion/emailTemplateComponent";
+import OperationsTable from "@/components/gestion/operationComponent";
 
-export default function Gestion({ userData, users, emails, templates }) {
+export default function Gestion({ userData, users, emails, templates, operations }) {
     const [selectedTable, setSelectedTable] = useState("emails");
     const isAdmin = userData.admin === true;
 
-    const availableTables = isAdmin ? ["emails", "modeles", "users"] : ["emails", "modeles"];
+    const availableTables = isAdmin ? ["emails", "modeles", "others", "users"] : ["emails", "modeles", "others"];
 
     return (
         <section className="bg-gradient-to-r from-slate-800 to-slate-900 overflow-auto h-full">
@@ -39,6 +40,7 @@ export default function Gestion({ userData, users, emails, templates }) {
                 {selectedTable === "users" && isAdmin && <UserGestion users={users} />}
                 {selectedTable === "emails" && <EmailsGestion emailsData={emails} />}
                 {selectedTable === "modeles" && <EmailTemplateGestion templates={templates} />}
+                {selectedTable === "others" && <OperationsTable operations={operations} />}
             </div>
         </section>
     );
@@ -50,10 +52,11 @@ export async function getServerSideProps(context) {
     if (authResult?.props?.userData) {
         const client = await pool.connect();
         try {
-            const [usersResult, emailsResult, emailsTemplate] = await Promise.all([
+            const [usersResult, emailsResult, emailsTemplate, operationsResult] = await Promise.all([
                 client.query("SELECT * FROM users"),
                 client.query("SELECT * FROM emails"),
-                client.query("SELECT * FROM emails_templates")
+                client.query("SELECT * FROM emails_templates"),
+                client.query("SELECT * FROM operations")
             ]);
 
             const users = usersResult.rows.map(user => ({
@@ -72,12 +75,18 @@ export async function getServerSideProps(context) {
                 created_at: template.created_at ? template.created_at.toISOString() : null,
             }));
 
+            const operations = operationsResult.rows.map(operation => ({
+                ...operation,
+                created_at: operation.created_at ? operation.created_at.toISOString() : null,
+            }));
+
             return {
                 props: {
                     ...authResult.props,
                     users,
                     emails,
                     templates,
+                    operations,
                 }
             };
         } catch (error) {
