@@ -40,6 +40,7 @@ export default async function handler(req, res) {
         const emailEntries = contacts.map(contact => ({
             email: contact.email,
             contact_type: contact.role || "unknown",
+            fullname: contact.fullname || "unknown",
             company_name: contact.company_name || "unknown",
             gender: contact.gender || "unknown"
         }));
@@ -51,8 +52,8 @@ export default async function handler(req, res) {
             const { rows } = await client.query("SELECT * FROM emails WHERE company_name = $1 AND receive = true", [entry.company_name]);
             if (rows.length > 0) {
                 await client.query(
-                    "UPDATE emails SET email = $1, contact_type = $2, gender = $3 WHERE company_name = $4",
-                    [entry.email, entry.contact_type, entry.gender, entry.company_name]
+                    "UPDATE emails SET email = $1, fullname = $2, contact_type = $3, gender = $4 WHERE company_name = $5",
+                    [entry.email, entry.fullname, entry.contact_type, entry.gender, entry.company_name]
                 );
                 return { email: entry.email, uuid: rows[0].uuid };
             }

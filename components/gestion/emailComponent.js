@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 export default function EmailsGestion({ emailsData }) {
@@ -14,20 +15,20 @@ export default function EmailsGestion({ emailsData }) {
         }
 
         let csvContent = "\uFEFF";
-        const headers = ["Nom de la société", "SIRET", "Nom", "Prenom", "Genre", "Email", "Abonne", "Role", "Date d'ajouts", "Date de désinscription", "Lieux de collecte", "Famille"].join(";");
+        const headers = ["Nom de la société", "SIRET", "Nom Complet", "Genre", "Email", "Abonne", "Role", "Date d'ajouts", "Date de désinscription", "LinkedIn", "Lieux de collecte", "Famille"].join(";");
         csvContent += headers + "\r\n";
         content.forEach(row => {
             const rowData = [
                 `"${row.company_name}"`,
                 `"${row.siret}"`,
-                `"${row.nom}"`,
-                `"${row.prenom}"`,
+                `"${row.fullname}"`,
                 `"${row.gender}"`,
                 `"${row.email}"`,
                 `"${row.receive}"`,
                 `"${row.contact_type}"`,
                 `"${row.added_at ? new Date(row.added_at).toLocaleString() : ''}"`,
                 `"${row.deactivated_at ? new Date(row.deactivated_at).toLocaleString() : ''}"`,
+                `"${row.linkedin}"`,
                 `"${row.collecte}"`,
                 `"${row.famille.join(',')}"`
             ].join(";");
@@ -85,15 +86,15 @@ export default function EmailsGestion({ emailsData }) {
                             <tr>
                                 <th scope="col" className={`px-6 py-3`}>SIRET</th>
                                 <th scope="col" className={`px-6 py-3`}>Nom de la société</th>
-                                <th scope="col" className={`px-6 py-3`}>Nom</th>
-                                <th scope="col" className={`px-6 py-3`}>Prenom</th>
+                                <th scope="col" className={`px-6 py-3`}>Nom Complet</th>
                                 <th scope="col" className={`px-6 py-3`}>Genre</th>
                                 <th scope="col" className={`px-6 py-3`}>Email</th>
                                 <th scope="col" className={`px-6 py-3`}>Abonné</th>
                                 <th scope="col" className={`px-6 py-3`}>Rôle</th>
                                 <th scope="col" className={`px-6 py-3`}>Date d'ajout</th>
                                 <th scope="col" className={`px-6 py-3`}>Date de désinscription</th>
-                                <th scope="col" className={`px-6 py-3`}>Lieux de collecte</th>
+                                <th scope="col" className={`px-6 py-3`}>LinkedIn</th>
+                                <th scope="col" className={`px-6 py-3`}>Lieux de la collecte</th>
                                 <th scope="col" className={`px-6 py-3`}>Famille</th>
                             </tr>
                         </thead>
@@ -107,10 +108,7 @@ export default function EmailsGestion({ emailsData }) {
                                         {element.company_name}
                                     </td>
                                     <td className={`px-6 py-4`}>
-                                        {element.nom}
-                                    </td>
-                                    <td className={`px-6 py-4`}>
-                                        {element.prenom}
+                                        {element.fullname}
                                     </td>
                                     <td className={`px-6 py-4`}>
                                         {element.gender}
@@ -129,6 +127,9 @@ export default function EmailsGestion({ emailsData }) {
                                     </td>
                                     <td className={`px-6 py-4`}>
                                         {element.deactivated_at ? new Date(element.deactivated_at).toLocaleString() : 'Aucune'}
+                                    </td>
+                                    <td className={`px-6 py-4`}>
+                                        <Link className="text-cyan-500" href={element.linkedin ? element.linkedin : ""}>LinkedIn</Link>
                                     </td>
                                     <td className={`px-6 py-4`}>
                                         {element.collecte}
