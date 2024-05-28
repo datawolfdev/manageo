@@ -68,6 +68,7 @@ export default async function handler(req, res) {
 
         res.status(200).json({ message: "Le fichier a été mis à jour avec succès, les crédits utilisés et le search_id ont été vidés." });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ message: "Erreur lors de l'ajout des emails à la base de données." });
     }
 }
