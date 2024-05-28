@@ -1,10 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Image from "next/image";
 import useContacts from "@/hooks/useContact";
 import ContactComponent from "@/components/contactComponent";
 import checkAuth from "@/lib/checkAuth";
 import SpeedDial from "@/components/speedDialComponent";
+import { useRouter } from "next/router";
 
 export default function Home({ userData }) {
     const [file, setFile] = useState(null);
@@ -13,6 +14,7 @@ export default function Home({ userData }) {
     const [message, setMessage] = useState("");
     const fileInputRef = useRef(null);
     const Contact = useContacts();
+    const router = useRouter();
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -37,16 +39,16 @@ export default function Home({ userData }) {
                 const { data: { sirets } } = await axios.post("/api/email/upload", formData);
                 if (sirets) {
                     setMessage("Extraction des SIRET réussie, recherche en cours...");
-                    setProgress(33)
+                    setProgress(33);
                     const { data: { compagnies } } = await axios.post("/api/email/rocketLead", { sirets, Contact });
                     setMessage("Recherche terminée, traitement des données...");
-                    setProgress(66)
+                    setProgress(66);
                     await axios.post("/api/email/enrich", { compagnies, Contact });
-                    setMessage("Envoie des mails en cours.");
+                    setMessage("Envoi des mails en cours.");
                     setProgress(100);
                 }
             } catch (err) {
-                setError(err.response?.data?.error || "Erreur lors de l\"envoi du fichier.");
+                setError(err.response?.data?.error || "Erreur lors de l'envoi du fichier.");
                 setProgress(0);
             }
         }
@@ -60,11 +62,20 @@ export default function Home({ userData }) {
         fileInputRef.current.value = null;
     };
 
+    useEffect(() => {
+        if (progress === 100) {
+            const timer = setTimeout(() => {
+                router.push("/gestion");
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [progress, router]);
+
     return (
         <section className="bg-gradient-to-r from-slate-900 to-slate-950 overflow-auto h-full">
             <SpeedDial />
             <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 flex flex-col justify-center items-center h-full gap-5">
-                <h1 className="text-white text-2xl">Envoyer votre fichier</h1>
+                <h1 className="text-white text-2xl">Téléverser votre fichier ( xlsx, xls, csv)</h1>
                 <div className="input-div relative w-24 h-24 rounded-full border-2 border-cyan-300 flex justify-center items-center overflow-hidden shadow-[0px_0px_100px_rgb(1,235,252),inset_0px_0px_10px_rgb(1,235,252),0px_0px_5px_rgb(255,255,255)] animate-flicker">
                     <input
                         className={`input z-10 absolute opacity-0 w-full h-full ${file ? "cursor-not-allowed" : "cursor-pointer"}`}
@@ -82,7 +93,10 @@ export default function Home({ userData }) {
                         <polyline points="16 16 12 12 8 16"></polyline>
                     </svg>
                 </div>
-                <ContactComponent Contact={Contact} />
+                <div className="flex flex-col justify-center items-center mt-5">
+                    <h1 className="text-white text-1xl">Enrichissez les SIRET par les profils de votre choix</h1>
+                    <ContactComponent Contact={Contact} />
+                </div>
                 {file && (
                     <div className="relative flex flex-col justify-center items-center mt-4 h-32 w-32 bg-white rounded-lg gap-2">
                         <button className="absolute top-0 right-0 text-red-600" onClick={handleRemoveFile}>

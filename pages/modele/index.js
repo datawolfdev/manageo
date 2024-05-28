@@ -118,7 +118,7 @@ export default function CreateEmail({ userData }) {
         <div className="bg-gradient-to-r from-slate-900 to-slate-950 overflow-auto h-full">
             <SpeedDial userData={userData} />
             <form onSubmit={handleSubmit} className="grid grid-cols-12 grid-rows-12 justify-center items-center w-full h-full">
-                <h1 className="row-start-1 row-span-1 col-start-2 col-span-10 flex justify-center items-center">Createur de mail</h1>
+                <h1 className="row-start-1 row-span-1 col-start-2 col-span-10 flex justify-center items-center">Création du message</h1>
                 <div className="row-start-2 row-span-1 col-start-2 col-span-10 flex flex-row justify-between w-full gap-24">
                     <div className="relative w-full flex flex-col cursor-pointer">
                         <input

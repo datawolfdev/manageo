@@ -33,7 +33,7 @@ export default function ContactComponent({ Contact }) {
                         </kbd>
                     ))}
                 </div>
-                <p id="floating_helper_text" className={` mt-2 px-1 text-xs text-white`}>Ajouter les profils que vous souhaitez : exemple: PDG, RH…</p>
+                <p id="floating_helper_text" className={` mt-2 px-1 text-xs text-white`}>exemple : PDG, CEO... validez pas enter ou en cliquant sur le +</p>
             </div>
             <div className={`flex flex-col w-full justify-center`}>
                 <label htmlFor="countries" className={`block mb-2 text-sm font-medium text-white`}>Contact par profil (facultatif)</label>

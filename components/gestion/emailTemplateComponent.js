@@ -18,6 +18,16 @@ export default function EmailTemplateGestion({ templates }) {
         }
     };
 
+    const handleDeleteTemplate = async (templateId) => {
+        try {
+            const response = await axios.delete('/api/admin/deleteTemplate', { data: { templateId } });
+            setMessage(response.data.message);
+            setTemplatesList(templatesList.filter(template => template.id !== templateId));
+        } catch (error) {
+            setMessage('Erreur lors de la suppression du modèle.');
+        }
+    };
+
     const handlePreviewTemplate = () => {
         const selectedTemplate = templatesList.find(template => template.selected);
         if (selectedTemplate) {
@@ -45,6 +55,7 @@ export default function EmailTemplateGestion({ templates }) {
                             <th scope="col" className={`px-6 py-3`}>Sujet</th>
                             <th scope="col" className={`px-6 py-3`}>Date de création</th>
                             <th scope="col" className={`px-6 py-3`}>Sélectionné</th>
+                            <th scope="col" className={`px-6 py-3`}>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,6 +71,16 @@ export default function EmailTemplateGestion({ templates }) {
                                     >
                                         {template.selected ? 'Sélectionné' : 'Sélectionner'}
                                     </button>
+                                </td>
+                                <td className={`px-6 py-4`}>
+                                    {!template.selected && (
+                                        <button
+                                            onClick={() => handleDeleteTemplate(template.id)}
+                                            className={`px-4 py-2 bg-red-500 text-white rounded`}
+                                        >
+                                            Supprimer
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}
