@@ -18,7 +18,7 @@ export default async function handler(req, res) {
                 const batchResults = await Promise.all(batch.map(async siret => {
                     const { companies } = await companySearch(siret);
                     const company_name = companies[0]?.name1;
-                    if (company_name) await pool.query("INSERT INTO emails (siret, company_name, famille) VALUES ($1, $2, $3) ON CONFLICT (siret) DO NOTHING", [siret, company_name, Contact.selectedContact]);
+                    if (company_name) await pool.query("INSERT INTO entreprises (siret, company_name) VALUES ($1, $2) ON CONFLICT (siret) DO NOTHING", [siret, company_name]);
                     return company_name;
                 }));
                 results = results.concat(batchResults);

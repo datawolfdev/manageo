@@ -28,41 +28,42 @@ const batchSendEmails = async (allEmails, content, subject) => {
 };
 
 export default async function handler(req, res) {
-    if (req.method !== "POST") return res.setHeader("Allow", "POST").status(405).json({ message: "Méthode non autorisée." });
+    if (req.method !== "POST") return res.setHeader("Allow", ["POST"]).status(405).json({ message: "Méthode non autorisée." });
 
     const { id } = req.body;
     if (!id) return res.status(400).json({ message: "search_id manquant dans la requête." });
 
     try {
         const { data: { contacts } } = await connContactFinder.get(`/api/job?search_id=${id}`);
-
         const emailEntries = contacts.map(contact => ({
-            email: contact.email,
-            contact_type: contact.role || "unknown",
-            nom: contact.lastname || "unknown",
-            prenom: contact.firstname || "unknown",
-            company_name: contact.company_name || "unknown",
-            gender: contact.gender || "unknown",
-            linkedin: contact.linkedin || "unknown"
+            email: contact.email, contact_type: contact.role || "unknown", nom: contact.lastname || "unknown",
+            prenom: contact.firstname || "unknown", company_name: contact.company_name || "unknown",
+            gender: contact.gender || "unknown", linkedin: contact.linkedin || "unknown"
         }));
 
         const client = await pool.connect();
         await client.query("BEGIN");
 
         const updatePromises = emailEntries.map(async entry => {
-            const { rows } = await client.query("SELECT * FROM emails WHERE company_name = $1 AND receive = true", [entry.company_name]);
-            if (rows.length > 0) {
-                await client.query(
-                    "UPDATE emails SET email = $1, nom = $2, prenom = $3, contact_type = $4, gender = $5, linkedin = $6 WHERE company_name = $7",
-                    [entry.email, entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin, entry.company_name]
-                );
-                return { email: entry.email, uuid: rows[0].uuid };
+            const { rows: entrepriseRows } = await client.query("SELECT id, emails FROM entreprises WHERE company_name = $1", [entry.company_name]);
+            if (entrepriseRows.length > 0) {
+                const entreprise_id = entrepriseRows[0].id;
+                const { rows: emailRows } = await client.query("SELECT id FROM emails WHERE entreprise_id = $1 AND email = $2", [entreprise_id, entry.email]);
+                let email_id;
+                if (emailRows.length > 0) {
+                    email_id = emailRows[0].id;
+                    await client.query("UPDATE emails SET nom = $1, prenom = $2, contact_type = $3, gender = $4, linkedin = $5 WHERE id = $6", [entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin, email_id]);
+                } else {
+                    const { rows } = await client.query("INSERT INTO emails (entreprise_id, email, nom, prenom, contact_type, gender, linkedin) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", [entreprise_id, entry.email, entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin]);
+                    email_id = rows[0].id;
+                }
+                if (!entrepriseRows[0].emails.includes(email_id)) await client.query("UPDATE entreprises SET emails = array_append(emails, $1) WHERE id = $2", [email_id, entreprise_id]);
+                return { email: entry.email, uuid: email_id };
             }
             return null;
         });
 
         const results = (await Promise.all(updatePromises)).filter(result => result !== null);
-
         const templateResult = await client.query("SELECT * FROM emails_templates WHERE selected = true");
         if (templateResult.rows.length === 0) {
             await client.query("COMMIT");
@@ -79,6 +80,8 @@ export default async function handler(req, res) {
         res.status(200).json({ message: "Le fichier a été mis à jour avec succès, les crédits utilisés et le search_id ont été vidés." });
     } catch (error) {
         console.error(error);
+        await client.query("ROLLBACK");
+        client.release();
         res.status(500).json({ message: "Erreur lors de la mise à jour des emails dans la base de données." });
     }
 }
