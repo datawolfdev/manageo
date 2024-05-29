@@ -75,7 +75,7 @@ export default async function handler(req, res) {
         await batchSendEmails(results, templateContent, subject);
 
         const emailCount = emailEntries.length;
-
+        console.log(emailCount)
         await pool.query("UPDATE operations SET email_count = $1 WHERE created_at = (SELECT MAX(created_at) FROM operations)", [emailCount]);
 
         res.status(200).json({ message: "Le fichier a été mis à jour avec succès, les crédits utilisés et le search_id ont été vidés." });

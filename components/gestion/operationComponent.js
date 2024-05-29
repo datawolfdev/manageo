@@ -1,6 +1,6 @@
 export default function OperationsTable({ operations }) {
     const totalSiret = operations.reduce((sum, operation) => sum + operation.siret_count, 0);
-    const totalCompagny = operations.reduce((sum, operation) => sum + operation.compagny_count, 0);
+    const totalCompany = operations.reduce((sum, operation) => sum + operation.company_count, 0);
     const totalEmail = operations.reduce((sum, operation) => sum + operation.email_count, 0);
 
     return (
@@ -22,9 +22,9 @@ export default function OperationsTable({ operations }) {
                             <tr key={operation.id} className="bg-gray-700 border-b hover:overflow-hidden relative group bg-gradient-to-tl from-gray-900 to-gray-950 hover:from-gray-800 hover:to-gray-950 border-r-2 border-t-2 border-gray-900">
                                 <td className="px-6 py-4">{operation.id}</td>
                                 <td className="px-6 py-4">{operation.siret_count}</td>
-                                <td className="px-6 py-4">{operation.compagny_count}</td>
+                                <td className="px-6 py-4">{operation.company_count}</td>
                                 <td className="px-6 py-4">{operation.email_count}</td>
-                                <td className="px-6 py-4">{new Date(operation.date).toLocaleString()}</td>
+                                <td className="px-6 py-4">{new Date(operation.created_at).toLocaleString()}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -32,7 +32,7 @@ export default function OperationsTable({ operations }) {
                         <tr>
                             <td className="px-6 py-3 font-bold">Total</td>
                             <td className="px-6 py-3 font-bold">{totalSiret}</td>
-                            <td className="px-6 py-3 font-bold">{totalCompagny}</td>
+                            <td className="px-6 py-3 font-bold">{totalCompany}</td>
                             <td className="px-6 py-3 font-bold">{totalEmail}</td>
                             <td className="px-6 py-3 font-bold"></td>
                         </tr>
