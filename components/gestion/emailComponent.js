@@ -86,7 +86,8 @@ export default function EmailsGestion({ emailsData }) {
                             <tr>
                                 <th scope="col" className={`px-6 py-3`}>SIRET</th>
                                 <th scope="col" className={`px-6 py-3`}>Nom de la société</th>
-                                <th scope="col" className={`px-6 py-3`}>Nom Complet</th>
+                                <th scope="col" className={`px-6 py-3`}>Nom</th>
+                                <th scope="col" className={`px-6 py-3`}>Prénom</th>
                                 <th scope="col" className={`px-6 py-3`}>Genre</th>
                                 <th scope="col" className={`px-6 py-3`}>Email</th>
                                 <th scope="col" className={`px-6 py-3`}>Abonné</th>
@@ -108,7 +109,10 @@ export default function EmailsGestion({ emailsData }) {
                                         {element.company_name}
                                     </td>
                                     <td className={`px-6 py-4`}>
-                                        {element.fullname}
+                                        {element.nom}
+                                    </td>
+                                    <td className={`px-6 py-4`}>
+                                        {element.prenom}
                                     </td>
                                     <td className={`px-6 py-4`}>
                                         {element.gender}
