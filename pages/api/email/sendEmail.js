@@ -42,7 +42,8 @@ export default async function handler(req, res) {
             nom: contact.lastname || "unknown",
             prenom: contact.firstname || "unknown",
             company_name: contact.company_name || "unknown",
-            gender: contact.gender || "unknown"
+            gender: contact.gender || "unknown",
+            linkedin: contact.linkedin || "unknown"
         }));
 
         const client = await pool.connect();
@@ -52,8 +53,8 @@ export default async function handler(req, res) {
             const { rows } = await client.query("SELECT * FROM emails WHERE company_name = $1 AND receive = true", [entry.company_name]);
             if (rows.length > 0) {
                 await client.query(
-                    "UPDATE emails SET email = $1, nom = $2, prenom = $3, contact_type = $4, gender = $5 WHERE company_name = $6",
-                    [entry.email, entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.company_name]
+                    "UPDATE emails SET email = $1, nom = $2, prenom = $3, contact_type = $4, gender = $5, linkedin = $6 WHERE company_name = $7",
+                    [entry.email, entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin, entry.company_name]
                 );
                 return { email: entry.email, uuid: rows[0].uuid };
             }
@@ -74,7 +75,6 @@ export default async function handler(req, res) {
         client.release();
         await batchSendEmails(results, templateContent, subject);
         const emailCount = emailEntries.length;
-        console.log(emailCount)
         await pool.query("UPDATE operations SET email_count = $1 WHERE created_at = (SELECT MAX(created_at) FROM operations)", [emailCount]);
         res.status(200).json({ message: "Le fichier a été mis à jour avec succès, les crédits utilisés et le search_id ont été vidés." });
     } catch (error) {
