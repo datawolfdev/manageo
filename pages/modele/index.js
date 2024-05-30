@@ -52,14 +52,30 @@ export default function CreateEmail({ userData }) {
                 },
             });
 
+
             const defaultContent = `
-                <div style="max-width: 700px; margin: 0 auto; border-radius: 10px; background-color: #f2f2f2; padding: 20px; text-align: center; overflow-wrap: break-word;">
-                    <h1 style="color: #333; margin: 10px 0;">Confirmation de désinscription</h1>
-                    <H2 style="font-size: 22px; color: #777; margin: 10px 0;">Bonjour {{gender}} {{lastName}} {{firstName}}</h2>
-                    <p style="font-size: 16px; color: #777; margin: 10px 0;">Veuillez cliquer sur le bouton ci-dessous pour vous désinscrire.</p>
-                    <div style="margin: 6%;">
-                        <a href="https://{{domaine}}/unsubscribe?uuid={{uuid}}" style="text-decoration: none; color: #fff; background-color: #7e22ce; border-radius: 5px; padding: 10px 20px; display: inline-block;">Se désinscrire</a>
+                <div id="i7fl" style="max-width:700px;margin:0 auto;border-radius:10px;background-color:#f2f2f2;padding:20px;text-align:center;overflow-wrap:break-word;">
+                    <h1 id="iij2" style="color:#333;margin:10px 0;">Référencement de votre société dans notre base de données</h1>
+                    <h2 id="ip37" style="font-size:22px;color:#777;margin:10px 0;">Bonjour, {{lastname}} {{firstname}}
+                        <br style="box-sizing: border-box;" />
+                        <br style="box-sizing: border-box;" />Vous recevez ce message en tant que professionnel en vue d'être référencé dans la base de données B2B Manageo. Notre société, Datawolf, collecte des profils de contact pour Manageo afin de vous offrir une expérience optimisée et personnalisée.
+                        <br style="box-sizing: border-box;" />
+                        <br style="box-sizing: border-box;" />Manageo, située à Aix-en-Provence, accompagne depuis plus de 20 ans les entreprises françaises dans leur développement commercial. Ils sont régulièrement primés et reconnus comme experts sur le marché.
+                        <br style="box-sizing: border-box;" />
+                        <br style="box-sizing: border-box;" />Les professionnels référencés dans la base Manageo reçoivent en primeur des communications en phase avec leur activité afin de les tenir informés des dernières tendances du marché ainsi que des offres réservées aux entreprises.
+                        <br style="box-sizing: border-box;" />
+                        <br style="box-sizing: border-box;" />Nous nous engageons à ce titre à utiliser vos données dans le respect de la Politique Manageo de gestion et de protection des Données à Caractère Personnel.
+                        <br style="box-sizing: border-box;" />
+                        <br style="box-sizing: border-box;" />Vous pourrez à tout moment exercer votre droit d’opposition et d’effacement en suivant ce lien qui figurera aussi dans les messages que vous recevrez.
+                    </h2>
+                    <div id="ii5f" style="margin:6%;">
+                        <a href="https://{{domaine}}/unsubscribe?uuid={{uuid}}" id="i0qj" style="text-decoration:none;color:#fff;background-color:#7e22ce;border-radius:5px;padding:10px 20px;display:inline-block;">
+                            Je me retire de votre liste de diffusion
+                        </a>
                     </div>
+                    <a href="https://ed.manageo.biz/clt-mo/manageo/pdf/202201_PolitiquexDCPxManageo.pdf" id="ilclv" style="font-size:16px;color:#777;margin:10px 0;">
+                        Nous nous engageons à ce titre à utiliser vos données dans le respect de la Politique Manageo de gestion et de protection des Données à Caractère Personnel.
+                    </a>
                 </div>
             `;
             editorRef.current.setComponents(defaultContent);
@@ -116,54 +132,56 @@ export default function CreateEmail({ userData }) {
     };
 
     return (
-        <div className="bg-gradient-to-r from-slate-900 to-slate-950 overflow-auto h-full">
-            <SpeedDial userData={userData} />
-            <form onSubmit={handleSubmit} className="grid grid-cols-12 grid-rows-12 justify-center items-center w-full h-full">
-                <h1 className="row-start-1 row-span-1 col-start-2 col-span-10 flex justify-center items-center">Création du message</h1>
-                <div className="row-start-2 row-span-1 col-start-2 col-span-10 flex flex-row justify-between w-full gap-24">
-                    <div className="relative w-full flex flex-col cursor-pointer">
-                        <input
-                            onChange={(e) => setName(e.target.value)}
-                            type="text"
-                            id="name"
-                            className="block rounded-md px-2.5 pb-2.5 pt-5 w-full text-sm text-white bg-gray-950 border border-gray-700 appearance-none focus:outline-none focus:ring-0 focus:border-cyan-600 peer"
-                            placeholder=" "
-                            value={name}
-                            required
-                        />
-                        <label htmlFor="name" className="absolute cursor-pointer text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-cyan-600 peer-focus peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">Nom du mail</label>
-                        {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
+        <>
+            <div className="bg-gradient-to-r from-slate-900 to-slate-950 overflow-auto h-full">
+                <SpeedDial userData={userData} />
+                <form onSubmit={handleSubmit} className="grid grid-cols-12 grid-rows-12 justify-center items-center w-full h-full">
+                    <h1 className="row-start-1 row-span-1 col-start-2 col-span-10 flex justify-center items-center">Création du message</h1>
+                    <div className="row-start-2 row-span-1 col-start-2 col-span-10 flex flex-row justify-between w-full gap-24">
+                        <div className="relative w-full flex flex-col cursor-pointer">
+                            <input
+                                onChange={(e) => setName(e.target.value)}
+                                type="text"
+                                id="name"
+                                className="block rounded-md px-2.5 pb-2.5 pt-5 w-full text-sm text-white bg-gray-950 border border-gray-700 appearance-none focus:outline-none focus:ring-0 focus:border-cyan-600 peer"
+                                placeholder=" "
+                                value={name}
+                                required
+                            />
+                            <label htmlFor="name" className="absolute cursor-pointer text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-cyan-600 peer-focus peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">Nom du mail</label>
+                            {errors.name && <span className="text-red-500 text-sm">{errors.name}</span>}
+                        </div>
+                        <div className="relative w-full flex flex-col cursor-pointer">
+                            <input
+                                onChange={(e) => setSubject(e.target.value)}
+                                type="text"
+                                id="subject"
+                                className="block rounded-md px-2.5 pb-2.5 pt-5 w-full text-sm text-white bg-gray-950 border border-gray-700 appearance-none focus:outline-none focus:ring-0 focus:border-cyan-600 peer"
+                                placeholder=" "
+                                value={subject}
+                                required
+                            />
+                            <label htmlFor="subject" className="absolute cursor-pointer text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-cyan-600 peer-focus peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">Sujet</label>
+                            {errors.subject && <span className="text-red-500 text-sm">{errors.subject}</span>}
+                        </div>
+                        <div className="relative w-full flex flex-col cursor-pointer">
+                            <button type="submit" className="relative h-12 w-full items-center justify-center p-0.5 mb-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-tl from-gray-900 to-gray-950 hover:from-gray-800 hover:to-gray-950 border-r-2 border-t-2 border-gray-900 rounded-lg">
+                                <span className="relative flex justify-center items-center h-full w-full p-1 text-white">Sauvegarde</span>
+                                <div className="h-2 w-full bg-gradient-to-l via-cyan-500 group-hover:blur-xl blur-2xl m-auto rounded transition-all absolute bottom-0"></div>
+                                <div className="h-0.5 group-hover:w-full bg-gradient-to-l via-cyan-950 group-hover:via-cyan-500 w-[70%] m-auto rounded transition-all"></div>
+                            </button>
+                        </div>
                     </div>
-                    <div className="relative w-full flex flex-col cursor-pointer">
-                        <input
-                            onChange={(e) => setSubject(e.target.value)}
-                            type="text"
-                            id="subject"
-                            className="block rounded-md px-2.5 pb-2.5 pt-5 w-full text-sm text-white bg-gray-950 border border-gray-700 appearance-none focus:outline-none focus:ring-0 focus:border-cyan-600 peer"
-                            placeholder=" "
-                            value={subject}
-                            required
-                        />
-                        <label htmlFor="subject" className="absolute cursor-pointer text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-2.5 peer-focus:text-cyan-600 peer-focus peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto">Sujet</label>
-                        {errors.subject && <span className="text-red-500 text-sm">{errors.subject}</span>}
+                    <div className="row-start-3 col-start-2 row-span-9 col-span-10 flex h-full w-full grid grid-cols-8 grid-rows-9">
+                        <div id="blocks" className="row-start-1 col-span-8 row-span-2 overflow-auto"></div>
+                        <div id="gjs" className="row-start-3 col-span-8 row-span-9"></div>
                     </div>
-                    <div className="relative w-full flex flex-col cursor-pointer">
-                        <button type="submit" className="relative h-12 w-full items-center justify-center p-0.5 mb-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-tl from-gray-900 to-gray-950 hover:from-gray-800 hover:to-gray-950 border-r-2 border-t-2 border-gray-900 rounded-lg">
-                            <span className="relative flex justify-center items-center h-full w-full p-1 text-white">Sauvegarde</span>
-                            <div className="h-2 w-full bg-gradient-to-l via-cyan-500 group-hover:blur-xl blur-2xl m-auto rounded transition-all absolute bottom-0"></div>
-                            <div className="h-0.5 group-hover:w-full bg-gradient-to-l via-cyan-950 group-hover:via-cyan-500 w-[70%] m-auto rounded transition-all"></div>
-                        </button>
+                    <div className="row-start-12 col-start-2 col-span-10 flex h-full w-full justify-center items-center">
+                        {message && <p className="text-green-500">{message}</p>}
                     </div>
-                </div>
-                <div className="row-start-3 col-start-2 row-span-9 col-span-10 flex h-full w-full grid grid-cols-8 grid-rows-9">
-                    <div id="blocks" className="row-start-1 col-span-8 row-span-2 overflow-auto"></div>
-                    <div id="gjs" className="row-start-3 col-span-8 row-span-9"></div>
-                </div>
-                <div className="row-start-12 col-start-2 col-span-10 flex h-full w-full justify-center items-center">
-                    {message && <p className="text-green-500">{message}</p>}
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        </>
     );
 }
 

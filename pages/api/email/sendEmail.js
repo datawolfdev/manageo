@@ -23,7 +23,12 @@ const sendEmails = async (emails, content, subject) => {
     await Promise.all(emails.map(email => apiInstance.sendTransacEmail({
         to: [{ email: email.email }],
         subject: subject,
-        htmlContent: htmlEmail(content, { uuid: email.uuid, gender: email.gender, lastName: email.nom, firstName: email.prenom, domaine: process.env.DOMAIN }),
+        htmlContent: htmlEmail(content, {
+            uuid: email.uuid,
+            lastName: email.nom,
+            firstName: email.prenom,
+            domaine: process.env.DOMAIN,
+        }),
         sender: { email: process.env.EMAIL_USER }
     })));
 };
@@ -65,7 +70,7 @@ export default async function handler(req, res) {
                     email_id = rows[0].id;
                 }
                 if (!entrepriseRows[0].emails.includes(email_id)) await client.query("UPDATE entreprises SET emails = array_append(emails, $1) WHERE id = $2", [email_id, entreprise_id]);
-                return { email: entry.email, uuid: email_id, gender: entry.gender, nom: entry.nom, prenom: entry.prenom };
+                return { email: entry.email, uuid: email_id, nom: entry.nom, prenom: entry.prenom };
             }
             return null;
         });
