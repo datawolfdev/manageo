@@ -16,6 +16,7 @@ export default function Home({ userData }) {
     const [openPopup, setOpenPopup] = useState(false);
     const [compagnies, setCompagnies] = useState([]);
     const [type, setType] = useState("Siret")
+    const [nSiret, setNSiret] = useState(0)
     const fileInputRef = useRef(null);
     const Contact = useContacts();
     const router = useRouter();
@@ -41,10 +42,11 @@ export default function Home({ userData }) {
             setMessage("Extraction des Siret...");
             try {
                 const { data: { sirets } } = await axios.post("/api/email/upload", formData);
+                setNSiret(sirets.length)
                 if (sirets) {
                     setMessage("Extraction des SIRET réussie, recherche en cours...");
                     setProgress(33);
-                    const { data: { compagnies } } = await axios.post("/api/email/rocketLead", { sirets, Contact });
+                    const { data: { compagnies } } = await axios.post("/api/email/rocketLead", { sirets });
                     setMessage("Recherche terminée, traitement des données...");
                     setProgress(66);
                     setCompagnies(compagnies)
@@ -121,7 +123,7 @@ export default function Home({ userData }) {
                 {error && <p className="text-red-500 mt-2">{error}</p>}
                 <button onClick={handleSubmit} className="mt-4 px-4 py-2 bg-cyan-500 text-white rounded">Envoyer</button>
             </div>
-            {openPopup && <PopupComponent {...{ type, Contact, compagnies, userData, setMessage, setProgress, setOpenPopup }} />}
+            {openPopup && <PopupComponent {...{ type, Contact, compagnies, userData, setMessage, setProgress, setOpenPopup, nSiret }} />}
             {openPopup && <div className={`fixed z-40 inset-0 bg-black bg-opacity-30 backdrop-blur-sm`}></div>}
         </section>
     );

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 
-export default function PopupComponent({ type, compagnies, Contact, setMessage, setProgress, setOpenPopup }) {
+export default function PopupComponent({ type, compagnies, Contact, setMessage, setProgress, setOpenPopup, nSiret }) {
     const [name, setName] = useState("");
     const [title, setTitle] = useState("");
     const [messagePopup, setMessagePopup] = useState("");
@@ -26,7 +26,7 @@ export default function PopupComponent({ type, compagnies, Contact, setMessage, 
         e.preventDefault();
         try {
             if (type === "Siret" && confirm !== false) {
-                await axios.post("/api/email/enrich", { compagnies, Contact });
+                await axios.post("/api/email/enrich", { nSiret, compagnies, Contact });
                 setMessage("Envoi des mails en cours. Redirection en cours...");
                 setProgress(100);
             }

@@ -36,14 +36,12 @@ const handleFileUpload = async (req, res) => {
           if (err) return res.status(500).json({ error: "Erreur lors de la lecture du fichier CSV." });
           sirets = extractSIRET(data, Object.keys(data[0]), true);
           sirets = sirets.slice(0, parseInt(process.env.LIMIT_OF_SIRET));
-          await pool.query("INSERT INTO operations (siret_count) VALUES ($1)", [sirets.length]);
           return res.status(200).json({ message: "SIRETs extraits avec succès", sirets });
         });
         return;
       } else {
         return res.status(400).json({ error: "Type de fichier non supporté." });
       }
-      await pool.query("INSERT INTO operations (siret_count) VALUES ($1)", [sirets.length]);
       return res.status(200).json({ message: "SIRETs extraits avec succès", sirets });
     } catch (error) {
       return res.status(500).json({ error: "Erreur lors de la lecture du fichier." });
