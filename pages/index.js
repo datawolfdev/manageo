@@ -28,7 +28,7 @@ export default function Home({ userData }) {
             setFile(selectedFile);
             setError("");
         } else {
-            setError("Seuls les fichiers .xlsx, .csv sont autorisés.");
+            setError("Seuls les fichiers .csv sont autorisés.");
             setFile(null);
         }
     };
@@ -83,13 +83,13 @@ export default function Home({ userData }) {
         <section className="bg-gradient-to-r from-slate-900 to-slate-950 overflow-auto h-full">
             <SpeedDial />
             <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 flex flex-col justify-center items-center h-full gap-5">
-                <h1 className="text-white text-2xl">Téléverser votre fichier ( xlsx, xls, csv)</h1>
+                <h1 className="text-white text-2xl">Téléverser votre fichier .csv</h1>
                 <div className="input-div relative w-24 h-24 rounded-full border-2 border-cyan-300 flex justify-center items-center overflow-hidden shadow-[0px_0px_100px_rgb(1,235,252),inset_0px_0px_10px_rgb(1,235,252),0px_0px_5px_rgb(255,255,255)] animate-flicker">
                     <input
                         className={`input z-10 absolute opacity-0 w-full h-full ${file ? "cursor-not-allowed" : "cursor-pointer"}`}
                         name="file"
                         type="file"
-                        accept=".xlsx, .xls, .csv"
+                        accept=".csv"
                         onChange={handleFileChange}
                         disabled={file !== null}
                         ref={fileInputRef}

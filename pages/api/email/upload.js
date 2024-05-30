@@ -1,6 +1,5 @@
 import formidable from "formidable";
 import fs from "fs";
-import xlsx from "xlsx";
 import { parse } from "csv-parse";
 import { pool } from "@/db";
 
@@ -26,11 +25,7 @@ const handleFileUpload = async (req, res) => {
 
     let sirets = [];
     try {
-      if (["xlsx", "xls"].includes(fileType)) {
-        const workbook = xlsx.readFile(filePath);
-        const sheet = xlsx.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-        sirets = extractSIRET(sheet.slice(1), sheet[0]);
-      } else if (fileType === "csv") {
+      if (fileType === "csv") {
         const fileContent = fs.readFileSync(filePath, "utf-8");
         parse(fileContent, { delimiter: ",", columns: true }, async (err, data) => {
           if (err) return res.status(500).json({ error: "Erreur lors de la lecture du fichier CSV." });
@@ -42,7 +37,6 @@ const handleFileUpload = async (req, res) => {
       } else {
         return res.status(400).json({ error: "Type de fichier non supporté." });
       }
-      return res.status(200).json({ message: "SIRETs extraits avec succès", sirets });
     } catch (error) {
       return res.status(500).json({ error: "Erreur lors de la lecture du fichier." });
     }
