@@ -6,12 +6,16 @@ import ContactComponent from "@/components/contactComponent";
 import checkAuth from "@/lib/checkAuth";
 import SpeedDial from "@/components/speedDialComponent";
 import { useRouter } from "next/router";
+import PopupComponent from "@/components/popupComponent";
 
 export default function Home({ userData }) {
     const [file, setFile] = useState(null);
     const [error, setError] = useState("");
     const [progress, setProgress] = useState(0);
     const [message, setMessage] = useState("");
+    const [openPopup, setOpenPopup] = useState(false);
+    const [compagnies, setCompagnies] = useState([]);
+    const [type, setType] = useState("Siret")
     const fileInputRef = useRef(null);
     const Contact = useContacts();
     const router = useRouter();
@@ -43,9 +47,11 @@ export default function Home({ userData }) {
                     const { data: { compagnies } } = await axios.post("/api/email/rocketLead", { sirets, Contact });
                     setMessage("Recherche terminée, traitement des données...");
                     setProgress(66);
-                    await axios.post("/api/email/enrich", { compagnies, Contact });
-                    setMessage("Envoi des mails en cours.");
-                    setProgress(100);
+                    setCompagnies(compagnies)
+                    if (compagnies.length > 0) {
+                        setOpenPopup(true)
+                    }
+
                 }
             } catch (err) {
                 setError(err.response?.data?.error || "Erreur lors de l'envoi du fichier.");
@@ -115,6 +121,8 @@ export default function Home({ userData }) {
                 {error && <p className="text-red-500 mt-2">{error}</p>}
                 <button onClick={handleSubmit} className="mt-4 px-4 py-2 bg-cyan-500 text-white rounded">Envoyer</button>
             </div>
+            {openPopup && <PopupComponent {...{ type, Contact, compagnies, userData, setMessage, setProgress, setOpenPopup }} />}
+            {openPopup && <div className={`fixed z-40 inset-0 bg-black bg-opacity-30 backdrop-blur-sm`}></div>}
         </section>
     );
 }
