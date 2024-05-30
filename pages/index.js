@@ -102,7 +102,11 @@ export default function Home({ userData }) {
                     </svg>
                 </div>
                 <div className="flex flex-col justify-center items-center mt-5">
-                    <h1 className="text-white text-1xl">Enrichissez les SIRET par les profils de votre choix</h1>
+                    <div className="flex flex-col justify-center items-center">
+                        <h1 className="text-white text-1xl">Enrichissez les SIRET par les profils de votre choix.</h1>
+                        <p className="text-white text-xs">NB: (Header avec siret)</p>
+                    </div>
+
                     <ContactComponent Contact={Contact} />
                 </div>
                 {file && (
