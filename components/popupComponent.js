@@ -27,21 +27,28 @@ export default function PopupComponent({ type, compagnies, Contact, setMessage, 
         try {
             if (type === "Siret" && confirm !== false) {
                 await axios.post("/api/email/enrich", { compagnies, Contact });
-                setMessage("Envoi des mails en cours.");
+                setMessage("Envoi des mails en cours. Redirection en cours...");
                 setProgress(100);
             }
         } catch (error) {
             console.error('Error:', error);
         }
-
-        UiControls.closePopup();
+        setOpenPopup(false)
     };
+
+    const handleCancel = async (e) => {
+        e.preventDefault();
+        setOpenPopup(false);
+        setMessage("")
+        setMessagePopup("")
+        setProgress(0)
+    }
 
     return ReactDOM.createPortal(
         <div className={`fixed inset-0 z-50 overflow-y-auto flex items-center justify-center`} style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
             <div className={`relative p-4 w-full max-w-md max-h-full`}>
                 <div className={`relative bg-white rounded-lg shadow`}>
-                    <button onClick={() => setOpenPopup(false)} type="button" className={`absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center`} data-modal-hide="popup-modal">
+                    <button onClick={handleCancel} type="button" className={`absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center`} data-modal-hide="popup-modal">
                         <svg className={`w-3 h-3`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
                         </svg>
@@ -57,7 +64,7 @@ export default function PopupComponent({ type, compagnies, Contact, setMessage, 
                             <button onClick={e => handleSubmit(e, true)} className={`text-white bg-green-600 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2`}>
                                 Oui, je suis sûr
                             </button>
-                            <button onClick={e => handleSubmit(e, false)} className={`py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-cyan-700 focus:z-10 focus:ring-4 focus:ring-gray-100`}>Non</button>
+                            <button onClick={handleCancel} className={`py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-cyan-700 focus:z-10 focus:ring-4 focus:ring-gray-100`}>Non</button>
                         </div>
                     </div>
                 </div>
