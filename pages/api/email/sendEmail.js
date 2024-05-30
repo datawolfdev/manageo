@@ -9,14 +9,21 @@ const connContactFinder = axios.create({
 
 Brevo.ApiClient.instance.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
 
-const htmlEmail = (content, uuid) => content.replace(/{{uuid}}/g, uuid);
+const htmlEmail = (content, replacements) => {
+    let result = content;
+    for (const [key, value] of Object.entries(replacements)) {
+        const regex = new RegExp(`{{${key}}}`, 'g');
+        result = result.replace(regex, value);
+    }
+    return result;
+};
 
 const sendEmails = async (emails, content, subject) => {
     const apiInstance = new Brevo.TransactionalEmailsApi();
     await Promise.all(emails.map(email => apiInstance.sendTransacEmail({
         to: [{ email: email.email }],
         subject: subject,
-        htmlContent: htmlEmail(content, email.uuid),
+        htmlContent: htmlEmail(content, { uuid: email.uuid, gender: email.gender, lastName: email.nom, firstName: email.prenom, domaine: process.env.DOMAIN }),
         sender: { email: process.env.EMAIL_USER }
     })));
 };
@@ -44,8 +51,6 @@ export default async function handler(req, res) {
             gender: contact.gender || "unknown", linkedin: contact.linkedin || "unknown"
         }));
 
-
-
         const updatePromises = emailEntries.map(async entry => {
             const { rows: entrepriseRows } = await client.query("SELECT id, emails FROM entreprises WHERE company_name = $1", [entry.company_name]);
             if (entrepriseRows.length > 0) {
@@ -60,7 +65,7 @@ export default async function handler(req, res) {
                     email_id = rows[0].id;
                 }
                 if (!entrepriseRows[0].emails.includes(email_id)) await client.query("UPDATE entreprises SET emails = array_append(emails, $1) WHERE id = $2", [email_id, entreprise_id]);
-                return { email: entry.email, uuid: email_id };
+                return { email: entry.email, uuid: email_id, gender: entry.gender, nom: entry.nom, prenom: entry.prenom };
             }
             return null;
         });

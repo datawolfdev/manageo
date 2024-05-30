@@ -55,9 +55,10 @@ export default function CreateEmail({ userData }) {
             const defaultContent = `
                 <div style="max-width: 700px; margin: 0 auto; border-radius: 10px; background-color: #f2f2f2; padding: 20px; text-align: center; overflow-wrap: break-word;">
                     <h1 style="color: #333; margin: 10px 0;">Confirmation de désinscription</h1>
+                    <H2 style="font-size: 22px; color: #777; margin: 10px 0;">Bonjour {{gender}} {{lastName}} {{firstName}}</h2>
                     <p style="font-size: 16px; color: #777; margin: 10px 0;">Veuillez cliquer sur le bouton ci-dessous pour vous désinscrire.</p>
                     <div style="margin: 6%;">
-                        <a href="https://app.enrichcontact.com/unsubscribe?uuid={{uuid}}" style="text-decoration: none; color: #fff; background-color: #7e22ce; border-radius: 5px; padding: 10px 20px; display: inline-block;">Se désinscrire</a>
+                        <a href="https://{{domaine}}/unsubscribe?uuid={{uuid}}" style="text-decoration: none; color: #fff; background-color: #7e22ce; border-radius: 5px; padding: 10px 20px; display: inline-block;">Se désinscrire</a>
                     </div>
                 </div>
             `;

@@ -6,10 +6,11 @@ import { pool } from "@/db";
 
 export const config = { api: { bodyParser: false } };
 
-const extractSIRET = (data, headers, csv = false) => {
+const extractSIRET = (data, headers, csv = false, limit = 10000) => {
   const siretColumn = headers.find(header => header.toLowerCase() === "siret");
   if (!siretColumn) return [];
-  return csv ? data.map(el => el[siretColumn]).filter(Boolean) : data.map(el => el[headers.indexOf(siretColumn)]).filter(Boolean);
+  const sirets = csv ? data.map(el => el[siretColumn]).filter(Boolean) : data.map(el => el[headers.indexOf(siretColumn)]).filter(Boolean);
+  return sirets.slice(0, limit);
 };
 
 const handleFileUpload = async (req, res) => {
@@ -34,6 +35,7 @@ const handleFileUpload = async (req, res) => {
         parse(fileContent, { delimiter: ",", columns: true }, async (err, data) => {
           if (err) return res.status(500).json({ error: "Erreur lors de la lecture du fichier CSV." });
           sirets = extractSIRET(data, Object.keys(data[0]), true);
+          sirets = sirets.slice(0, parseInt(process.env.LIMIT_OF_SIRET));
           await pool.query("INSERT INTO operations (siret_count) VALUES ($1)", [sirets.length]);
           return res.status(200).json({ message: "SIRETs extraits avec succès", sirets });
         });
