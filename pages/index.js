@@ -23,7 +23,7 @@ export default function Home({ userData }) {
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
-        const allowedTypes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel", "text/csv"];
+        const allowedTypes = ["text/csv"];
         if (selectedFile && allowedTypes.includes(selectedFile.type)) {
             setFile(selectedFile);
             setError("");
