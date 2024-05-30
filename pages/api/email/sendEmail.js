@@ -33,6 +33,9 @@ export default async function handler(req, res) {
     const { id } = req.body;
     if (!id) return res.status(400).json({ message: "search_id manquant dans la requête." });
 
+    const client = await pool.connect();
+    await client.query("BEGIN");
+
     try {
         const { data: { contacts } } = await connContactFinder.get(`/api/job?search_id=${id}`);
         const emailEntries = contacts.map(contact => ({
@@ -41,8 +44,7 @@ export default async function handler(req, res) {
             gender: contact.gender || "unknown", linkedin: contact.linkedin || "unknown"
         }));
 
-        const client = await pool.connect();
-        await client.query("BEGIN");
+
 
         const updatePromises = emailEntries.map(async entry => {
             const { rows: entrepriseRows } = await client.query("SELECT id, emails FROM entreprises WHERE company_name = $1", [entry.company_name]);
@@ -79,7 +81,7 @@ export default async function handler(req, res) {
         await pool.query("UPDATE operations SET email_count = $1 WHERE created_at = (SELECT MAX(created_at) FROM operations)", [emailCount]);
         res.status(200).json({ message: "Le fichier a été mis à jour avec succès, les crédits utilisés et le search_id ont été vidés." });
     } catch (error) {
-        console.error(error);
+        console.log(id, "\nemail non trouver")
         await client.query("ROLLBACK");
         client.release();
         res.status(500).json({ message: "Erreur lors de la mise à jour des emails dans la base de données." });
