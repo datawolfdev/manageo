@@ -25,8 +25,8 @@ const sendEmails = async (emails, content, subject) => {
         subject: subject,
         htmlContent: htmlEmail(content, {
             uuid: email.uuid,
-            lastName: email.nom,
-            firstName: email.prenom,
+            lastname: email.nom,
+            firstname: email.prenom,
             domaine: process.env.DOMAIN,
         }),
         sender: { email: process.env.EMAIL_USER }
@@ -60,17 +60,20 @@ export default async function handler(req, res) {
             const { rows: entrepriseRows } = await client.query("SELECT id, emails FROM entreprises WHERE company_name = $1", [entry.company_name]);
             if (entrepriseRows.length > 0) {
                 const entreprise_id = entrepriseRows[0].id;
-                const { rows: emailRows } = await client.query("SELECT id FROM emails WHERE entreprise_id = $1 AND email = $2", [entreprise_id, entry.email]);
+                const { rows: emailRows } = await client.query("SELECT id, uuid FROM emails WHERE entreprise_id = $1 AND email = $2", [entreprise_id, entry.email]);
                 let email_id;
+                let email_uuid;
                 if (emailRows.length > 0) {
                     email_id = emailRows[0].id;
+                    email_uuid = emailRows[0].uuid
                     await client.query("UPDATE emails SET nom = $1, prenom = $2, contact_type = $3, gender = $4, linkedin = $5 WHERE id = $6", [entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin, email_id]);
                 } else {
-                    const { rows } = await client.query("INSERT INTO emails (entreprise_id, email, nom, prenom, contact_type, gender, linkedin) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", [entreprise_id, entry.email, entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin]);
+                    const { rows } = await client.query("INSERT INTO emails (entreprise_id, email, nom, prenom, contact_type, gender, linkedin) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING uuid, id", [entreprise_id, entry.email, entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin]);
                     email_id = rows[0].id;
+                    email_uuid = rows[0].uuid
                 }
                 if (!entrepriseRows[0].emails.includes(email_id)) await client.query("UPDATE entreprises SET emails = array_append(emails, $1) WHERE id = $2", [email_id, entreprise_id]);
-                return { email: entry.email, uuid: email_id, nom: entry.nom, prenom: entry.prenom };
+                return { email: entry.email, uuid: email_uuid, nom: entry.nom, prenom: entry.prenom };
             }
             return null;
         });

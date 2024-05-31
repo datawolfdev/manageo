@@ -54,7 +54,7 @@ export async function getServerSideProps(context) {
         try {
             const [usersResult, emailsResult, emailsTemplate, operationsResult] = await Promise.all([
                 client.query("SELECT * FROM users"),
-                client.query(`SELECT e.*, ent.siret, ent.company_name FROM emails e JOIN entreprises ent ON e.entreprise_id = ent.id`),
+                client.query(`SELECT e.*, ent.siret, ent.company_name, ent.phone FROM emails e JOIN entreprises ent ON e.entreprise_id = ent.id`),
                 client.query("SELECT * FROM emails_templates"),
                 client.query("SELECT * FROM operations")
             ]);
@@ -70,7 +70,8 @@ export async function getServerSideProps(context) {
                 deactivated_at: email.deactivated_at ? email.deactivated_at.toISOString() : null,
                 famille: email.famille || [],
                 siret: email.siret,
-                company_name: email.company_name
+                company_name: email.company_name,
+                phone: email.phone
             }));
 
             const templates = emailsTemplate.rows.map(template => ({
