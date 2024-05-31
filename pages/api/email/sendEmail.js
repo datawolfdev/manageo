@@ -12,7 +12,6 @@ Brevo.ApiClient.instance.authentications["api-key"].apiKey = process.env.BREVO_A
 const htmlEmail = (content, replacements) => {
     let result = content;
     for (const [key, value] of Object.entries(replacements)) {
-        console.log(key, value)
         const regex = new RegExp(`{{${key}}}`, 'g');
         result = result.replace(regex, value);
     }
@@ -20,30 +19,18 @@ const htmlEmail = (content, replacements) => {
 };
 
 const sendEmails = async (emails, content, subject) => {
-    // const apiInstance = new Brevo.TransactionalEmailsApi();
-    // await Promise.all(emails.map(email => apiInstance.sendTransacEmail({
-    //     to: [{ email: email.email }],
-    //     subject: subject,
-    //     htmlContent: htmlEmail(content, {
-    //         uuid: email.uuid,
-    //         lastName: email.nom,
-    //         firstName: email.prenom,
-    //         domaine: process.env.DOMAIN,
-    //     }),
-    //     sender: { email: process.env.EMAIL_USER }
-    // })));
-    const test = await Promise.all(emails.map(email => ({
+    const apiInstance = new Brevo.TransactionalEmailsApi();
+    await Promise.all(emails.map(email => apiInstance.sendTransacEmail({
         to: [{ email: email.email }],
         subject: subject,
         htmlContent: htmlEmail(content, {
             uuid: email.uuid,
-            lastName: email.nom,
-            firstName: email.prenom,
+            lastname: email.nom,
+            firstname: email.prenom,
             domaine: process.env.DOMAIN,
         }),
         sender: { email: process.env.EMAIL_USER }
     })));
-    console.log(test)
 };
 
 const batchSendEmails = async (allEmails, content, subject) => {
@@ -55,15 +42,14 @@ const batchSendEmails = async (allEmails, content, subject) => {
 export default async function handler(req, res) {
     if (req.method !== "POST") return res.setHeader("Allow", ["POST"]).status(405).json({ message: "Méthode non autorisée." });
 
-    const { contacts } = req.body
-    // const { id } = req.body;
-    // if (!id) return res.status(400).json({ message: "search_id manquant dans la requête." });
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ message: "search_id manquant dans la requête." });
 
     const client = await pool.connect();
     await client.query("BEGIN");
 
     try {
-        // const { data: { contacts } } = await connContactFinder.get(`/api/job?search_id=${id}`);
+        const { data: { contacts } } = await connContactFinder.get(`/api/job?search_id=${id}`);
         const emailEntries = contacts.map(contact => ({
             email: contact.email, contact_type: contact.role || "unknown", nom: contact.lastname || "unknown",
             prenom: contact.firstname || "unknown", company_name: contact.company_name || "unknown",
@@ -74,17 +60,20 @@ export default async function handler(req, res) {
             const { rows: entrepriseRows } = await client.query("SELECT id, emails FROM entreprises WHERE company_name = $1", [entry.company_name]);
             if (entrepriseRows.length > 0) {
                 const entreprise_id = entrepriseRows[0].id;
-                const { rows: emailRows } = await client.query("SELECT id FROM emails WHERE entreprise_id = $1 AND email = $2", [entreprise_id, entry.email]);
+                const { rows: emailRows } = await client.query("SELECT id, uuid FROM emails WHERE entreprise_id = $1 AND email = $2", [entreprise_id, entry.email]);
                 let email_id;
+                let email_uuid;
                 if (emailRows.length > 0) {
                     email_id = emailRows[0].id;
+                    email_uuid = emailRows[0].uuid
                     await client.query("UPDATE emails SET nom = $1, prenom = $2, contact_type = $3, gender = $4, linkedin = $5 WHERE id = $6", [entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin, email_id]);
                 } else {
-                    const { rows } = await client.query("INSERT INTO emails (entreprise_id, email, nom, prenom, contact_type, gender, linkedin) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", [entreprise_id, entry.email, entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin]);
+                    const { rows } = await client.query("INSERT INTO emails (entreprise_id, email, nom, prenom, contact_type, gender, linkedin) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING uuid, id", [entreprise_id, entry.email, entry.nom, entry.prenom, entry.contact_type, entry.gender, entry.linkedin]);
                     email_id = rows[0].id;
+                    email_uuid = rows[0].uuid
                 }
                 if (!entrepriseRows[0].emails.includes(email_id)) await client.query("UPDATE entreprises SET emails = array_append(emails, $1) WHERE id = $2", [email_id, entreprise_id]);
-                return { email: entry.email, uuid: email_id, nom: entry.nom, prenom: entry.prenom };
+                return { email: entry.email, uuid: email_uuid, nom: entry.nom, prenom: entry.prenom };
             }
             return null;
         });
@@ -102,7 +91,7 @@ export default async function handler(req, res) {
         client.release();
         await batchSendEmails(results, templateContent, subject);
         const emailCount = emailEntries.length;
-        // await pool.query("UPDATE operations SET email_count = $1 WHERE created_at = (SELECT MAX(created_at) FROM operations)", [emailCount]);
+        await pool.query("UPDATE operations SET email_count = $1 WHERE created_at = (SELECT MAX(created_at) FROM operations)", [emailCount]);
         res.status(200).json({ message: "Le fichier a été mis à jour avec succès, les crédits utilisés et le search_id ont été vidés." });
     } catch (error) {
         console.log(id, "\nemail non trouver")

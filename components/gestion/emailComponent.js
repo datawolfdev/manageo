@@ -10,10 +10,10 @@ export default function EmailsGestion({ emailsData }) {
         if (filterNonAbonnes) content = content.filter(row => !row.receive);
 
         let csvContent = "\uFEFF";
-        csvContent += ["Nom de la société", "SIRET", "Nom", "Prénom", "Genre", "Email", "Abonné", "Rôle", "Date d'ajout", "Date de désinscription", "LinkedIn", "Lieux de collecte", "Famille"].join(";") + "\r\n";
+        csvContent += ["Nom de la société", "SIRET", "Nom", "Prénom", "Genre", "Email", "Téléphone", "Abonné", "Rôle", "Date d'ajout", "Date de désinscription", "LinkedIn", "Lieux de collecte", "Famille"].join(";") + "\r\n";
         content.forEach(row => {
             csvContent += [
-                `"${row.company_name}"`, `"${row.siret}"`, `"${row.nom}"`, `"${row.prenom}"`, `"${row.gender}"`, `"${row.email}"`,
+                `"${row.company_name}"`, `"${row.siret}"`, `"${row.nom}"`, `"${row.prenom}"`, `"${row.gender}"`, `"${row.email}"`, `"${row.phone}"`,
                 `"${row.receive}"`, `"${row.contact_type}"`, `"${row.added_at ? new Date(row.added_at).toLocaleString() : ''}"`,
                 `"${row.deactivated_at ? new Date(row.deactivated_at).toLocaleString() : ''}"`, `"${row.linkedin}"`, `"${row.collecte}"`, `"${row.famille.join(',')}"`
             ].join(";") + "\r\n";
@@ -46,7 +46,7 @@ export default function EmailsGestion({ emailsData }) {
                     <table className="w-full text-sm text-left rtl:text-right text-gray-100">
                         <thead className="text-xs text-gray-200 uppercase bg-gray-800">
                             <tr>
-                                {["SIRET", "Nom de la société", "Nom", "Prénom", "Genre", "Email", "Abonné", "Rôle", "Date d'ajout", "Date de désinscription", "LinkedIn", "Lieux de la collecte", "Famille"].map(header => (
+                                {["SIRET", "Nom de la société", "Nom", "Prénom", "Genre", "Email", "Téléphone", "Abonné", "Rôle", "Date d'ajout", "Date de désinscription", "LinkedIn", "Lieux de la collecte", "Famille"].map(header => (
                                     <th key={header} scope="col" className="px-6 py-3">{header}</th>
                                 ))}
                             </tr>
@@ -54,7 +54,7 @@ export default function EmailsGestion({ emailsData }) {
                         <tbody>
                             {filteredEmailsData.map(element => (
                                 <tr key={element.id} className="bg-gray-700 border-b hover:overflow-hidden relative group bg-gradient-to-tl from-gray-900 to-gray-950 hover:from-gray-800 hover:to-gray-950 border-r-2 border-t-2 border-gray-900">
-                                    {["siret", "company_name", "nom", "prenom", "gender", "email", "receive", "contact_type", "added_at", "deactivated_at", "linkedin", "collecte", "famille"].map(key => (
+                                    {["siret", "company_name", "nom", "prenom", "gender", "email", "phone", "receive", "contact_type", "added_at", "deactivated_at", "linkedin", "collecte", "famille"].map(key => (
                                         <td key={key} className={`px-6 py-4 ${key === "siret" ? "font-medium text-white whitespace-nowrap" : ""}`}>
                                             {key === "receive" ? (element[key] ? 'Oui' : 'Non') : key === "added_at" || key === "deactivated_at" ? (element[key] ? new Date(element[key]).toLocaleString() : 'Aucune') : key === "linkedin" ? <Link className="text-cyan-500" href={element[key] || ""}>LinkedIn</Link> : key === "famille" ? element[key].join(',') : element[key]}
                                         </td>
