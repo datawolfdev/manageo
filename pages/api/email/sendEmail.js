@@ -12,6 +12,7 @@ Brevo.ApiClient.instance.authentications["api-key"].apiKey = process.env.BREVO_A
 const htmlEmail = (content, replacements) => {
     let result = content;
     for (const [key, value] of Object.entries(replacements)) {
+        console.log(key, value)
         const regex = new RegExp(`{{${key}}}`, 'g');
         result = result.replace(regex, value);
     }
@@ -19,8 +20,19 @@ const htmlEmail = (content, replacements) => {
 };
 
 const sendEmails = async (emails, content, subject) => {
-    const apiInstance = new Brevo.TransactionalEmailsApi();
-    await Promise.all(emails.map(email => apiInstance.sendTransacEmail({
+    // const apiInstance = new Brevo.TransactionalEmailsApi();
+    // await Promise.all(emails.map(email => apiInstance.sendTransacEmail({
+    //     to: [{ email: email.email }],
+    //     subject: subject,
+    //     htmlContent: htmlEmail(content, {
+    //         uuid: email.uuid,
+    //         lastName: email.nom,
+    //         firstName: email.prenom,
+    //         domaine: process.env.DOMAIN,
+    //     }),
+    //     sender: { email: process.env.EMAIL_USER }
+    // })));
+    const test = await Promise.all(emails.map(email => ({
         to: [{ email: email.email }],
         subject: subject,
         htmlContent: htmlEmail(content, {
@@ -31,6 +43,7 @@ const sendEmails = async (emails, content, subject) => {
         }),
         sender: { email: process.env.EMAIL_USER }
     })));
+    console.log(test)
 };
 
 const batchSendEmails = async (allEmails, content, subject) => {
@@ -42,14 +55,15 @@ const batchSendEmails = async (allEmails, content, subject) => {
 export default async function handler(req, res) {
     if (req.method !== "POST") return res.setHeader("Allow", ["POST"]).status(405).json({ message: "Méthode non autorisée." });
 
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ message: "search_id manquant dans la requête." });
+    const { contacts } = req.body
+    // const { id } = req.body;
+    // if (!id) return res.status(400).json({ message: "search_id manquant dans la requête." });
 
     const client = await pool.connect();
     await client.query("BEGIN");
 
     try {
-        const { data: { contacts } } = await connContactFinder.get(`/api/job?search_id=${id}`);
+        // const { data: { contacts } } = await connContactFinder.get(`/api/job?search_id=${id}`);
         const emailEntries = contacts.map(contact => ({
             email: contact.email, contact_type: contact.role || "unknown", nom: contact.lastname || "unknown",
             prenom: contact.firstname || "unknown", company_name: contact.company_name || "unknown",
@@ -88,7 +102,7 @@ export default async function handler(req, res) {
         client.release();
         await batchSendEmails(results, templateContent, subject);
         const emailCount = emailEntries.length;
-        await pool.query("UPDATE operations SET email_count = $1 WHERE created_at = (SELECT MAX(created_at) FROM operations)", [emailCount]);
+        // await pool.query("UPDATE operations SET email_count = $1 WHERE created_at = (SELECT MAX(created_at) FROM operations)", [emailCount]);
         res.status(200).json({ message: "Le fichier a été mis à jour avec succès, les crédits utilisés et le search_id ont été vidés." });
     } catch (error) {
         console.log(id, "\nemail non trouver")
